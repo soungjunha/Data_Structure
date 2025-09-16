@@ -24,6 +24,6 @@ public:
 	}
 
 	bool exist() {
-
+		return 0;
 	}
 };

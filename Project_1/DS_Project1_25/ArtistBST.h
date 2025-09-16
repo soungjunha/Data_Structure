@@ -1,5 +1,8 @@
 #pragma once
-#include "ArtistBSTNode.h"
+
+#include <string>
+
+class ArtistBSTNode;
 
 class ArtistBST {
 private:

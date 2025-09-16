@@ -1,5 +1,9 @@
 #pragma once
-#include "TitleBSTNode.h"
+
+#include <vector>
+#include <string>
+
+class TitleBSTNode;
 
 class TitleBST {
 private:

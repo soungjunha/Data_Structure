@@ -15,7 +15,7 @@ Manager::~Manager() {
 }
 
 void Manager::run(const char* command) {
-	
+	cout<<command;
 }
 
 void Manager::LOAD() {

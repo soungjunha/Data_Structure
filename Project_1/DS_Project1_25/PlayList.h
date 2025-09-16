@@ -1,5 +1,7 @@
 #pragma once
-#include "PlayListNode.h"
+#include <string>
+
+class PlayListNode;
 
 class PlayList {
 private:
@@ -10,8 +12,8 @@ private:
 	string data;
 
 public:
-	PlayList() {}
-	~PlayList(){}
+	PlayList();
+	~PlayList();
 	void insert_node();
 	void delete_node();
 	bool empty();
