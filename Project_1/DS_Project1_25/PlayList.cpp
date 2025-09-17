@@ -30,7 +30,7 @@ bool PlayList::exist() {
 }
 
 string PlayList::print() {
-
+    return 0;
 }
 
 int PlayList::run_time() {

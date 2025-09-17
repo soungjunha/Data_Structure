@@ -2,6 +2,8 @@
 
 #include <string>
 
+using namespace std;
+
 class ArtistBSTNode;
 
 class ArtistBST {
