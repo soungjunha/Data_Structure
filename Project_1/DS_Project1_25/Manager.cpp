@@ -7,44 +7,83 @@
 using namespace std;
 
 Manager::Manager() {
-
+	flog.open("log.txt");
 }
 
 Manager::~Manager() {
-
+	fcmd.close();
+	flog.close();
 }
 
 void Manager::run(const char* command) {
-	ifstream command_file(command);
+	fcmd.open(command);
 
-	if (!command_file.is_open())
+	if (!fcmd.is_open())
 	{
-		cout<<"not found file"<<endl;
+		cout<<"not found command file"<<endl;
 	}
-
-	string line;
-	while (getline(command_file, line))
+	else
 	{
-		string part_1,part_2;
-		size_t pos=line.find(' ');
 
-		if (pos != string::npos) {
-        	part_1 = line.substr(0, pos);
-        	part_2 = line.substr(pos + 1);
-    	} else {
-        	part_1 = line;
-        	part_2 = "";
-    	}
+		string line;
+		while (getline(fcmd, line))
+		{
+			string keyword,parameter;
+			size_t pos=line.find(' ');
 
-		cout<<part_1<<endl;
-
+			if (pos != string::npos) {
+				keyword = line.substr(0, pos);
+				parameter = line.substr(pos + 1);
+			} else {
+				keyword = line;
+				parameter = "";
+			}
+			
+			if (keyword=="LOAD")
+			{
+				LOAD();
+			}
+			else if (keyword=="ADD")
+			{
+				ADD();
+			}
+			else if (keyword=="QPOP")
+			{
+				QPOP();
+			}
+			else if (keyword=="SEARCH")
+			{
+				SEARCH();
+			}
+			else if (keyword=="MAKEPL")
+			{
+				MAKEPL();
+			}
+			else if (keyword=="PRINT")
+			{
+				PRINT();
+			}
+			else if (keyword=="DELETE")
+			{
+				DELETE();
+			}
+			else if (keyword=="EXIT")
+			{
+				EXIT();
+			}
+			else
+			{
+				flog<<"========ERROR========"<<endl;
+				flog<<"1000"<<endl;
+				flog<<"======================"<<endl;
+			}
+			
+		}
 	}
-
-	command_file.close();
-
 }
 
 void Manager::LOAD() {
+	ifstream music_list("Music_List.txt");
 	
 }
 

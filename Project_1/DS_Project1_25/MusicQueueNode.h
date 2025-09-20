@@ -20,7 +20,7 @@ public:
 	~MusicQueueNode() {}
 
 	void insert() {
-
+		
 	}
 
 	bool exist() {
