@@ -17,6 +17,9 @@ bool MusicQueue::exist() {
 }
 
 void MusicQueue::push() {
+    if(size<=100){
+        throw "queue is full";
+    }
 
 }
 
