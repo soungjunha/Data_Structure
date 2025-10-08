@@ -104,7 +104,6 @@ void Manager::LOAD() {
         		tokens.push_back(token);
     		}
 			q.push(tokens[0],tokens[1],tokens[2]);
-			cout<<q.back()->get_artist()<<' '<<tokens[0]<<endl;
 		}
 		
 	}
