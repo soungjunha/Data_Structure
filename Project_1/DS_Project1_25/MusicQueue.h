@@ -5,14 +5,14 @@ class MusicQueue {
 private:
 	MusicQueueNode* head;
 	MusicQueueNode* rear;
-	int size = 0;
+	int size;
 public:
 	MusicQueue();
 	~MusicQueue();
 
 	bool empty();
-	bool exist();
-	void push();
-	MusicQueueNode* pop();
+	bool exist(string artist,string title,string run_time);
+	void push(string artist,string title,string run_time);
+	void pop();
 	MusicQueueNode* front();
 };

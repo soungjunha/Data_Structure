@@ -1,32 +1,84 @@
 #include "MusicQueue.h"
 
-MusicQueue::MusicQueue() {
-
+MusicQueue::MusicQueue(): head(nullptr),rear(nullptr),size(0){
 }
 
 MusicQueue::~MusicQueue() {
-
+    while (head!=nullptr)
+    {
+        MusicQueueNode* tmp=head;
+        head=head->get_next();
+        delete tmp;
+    }
+    rear=nullptr;
+    size=0;
 }
 
 bool MusicQueue::empty() {
-    return 0;
+    return size==0;
 }
 
-bool MusicQueue::exist() {
-    return 0;
+bool MusicQueue::exist(string artist,string title,string run_time) {
+    MusicQueueNode* tmp=head;
+    while (tmp!=nullptr)
+    {
+        if (tmp->get_artist()==artist&&tmp->get_title()==title&&tmp->get_run_time()==run_time)
+        {
+            return false;
+        }
+        tmp=tmp->get_next();
+    }
+    
+    return true;
 }
 
-void MusicQueue::push() {
-    if(size<=100){
+void MusicQueue::push(string artist,string title,string run_time) {
+    if(size>=100){
         throw "queue is full";
     }
+    if(head==nullptr){
+        head=rear=new MusicQueueNode(artist,title,run_time);
+    }
+    else
+    {
+        if(exist(artist,title,run_time))
+        {
+            rear->insert(artist,title,run_time);
+            rear=rear->get_next();
+        }
+        else
+        {
+            throw "same music";
+        }
+        
+    }
+    size++;
 
 }
 
-MusicQueueNode* MusicQueue::pop(){
-
+void MusicQueue::pop(){
+    if (empty()) {
+        throw "queue is empty";
+    }
+    MusicQueueNode* tmp = head;
+    head = head->get_next();
+    delete tmp;
+    size--;
+    if (head == nullptr) {
+        rear = nullptr;
+    }
+    
 }
 
 MusicQueueNode* MusicQueue::front() {
+    if (!empty())
+    {
+        MusicQueueNode* tmp=head;
+        return tmp;
+    }
+    else
+    {
+        throw "queue is empty";
+    }
 
 }

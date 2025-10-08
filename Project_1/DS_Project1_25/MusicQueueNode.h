@@ -17,19 +17,27 @@ private:
 
 public:
 	MusicQueueNode(): artist(""),title(""),run_time(""),next(nullptr),prev(nullptr){}
+	MusicQueueNode(const string& artist,const string& title,const string& run_time): next(nullptr),prev(nullptr){
+		if (exist(artist,title,run_time))
+		{
+			this->artist=artist;
+			this->title=title;
+			this->run_time=run_time;
+		}
+		else{
+			throw "node is not exist";
+		}
+	}
 	~MusicQueueNode() {
-		delete next;
-		delete prev;
 	}
 
 	void insert(string artist,string title,string run_time) {
-		this->artist=artist;
-		this->title=title;
-		this->run_time=run_time;
+		next=new MusicQueueNode(artist,title,run_time);
+		next->prev=this;
 	}
 
-	bool exist() {
-		return (artist!=""&&title!=""&&run_time!="")?true:false;
+	bool exist(string artist,string title,string run_time) {
+		return (artist!=""&&title!=""&&run_time!="");
 	}
 
 	MusicQueueNode* get_next() const { return next; }
