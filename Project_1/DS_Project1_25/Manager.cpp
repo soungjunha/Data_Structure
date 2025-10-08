@@ -46,7 +46,7 @@ void Manager::run(const char* command) {
 			}
 			else if (keyword=="ADD")
 			{
-				ADD();
+				ADD(parameter);
 			}
 			else if (keyword=="QPOP")
 			{
@@ -94,6 +94,7 @@ void Manager::LOAD() {
 	else
 	{
 		string line;
+		flog<<"========LOAD========"<<endl;
 		while (getline(music_list, line))
 		{
 			string token;
@@ -104,13 +105,40 @@ void Manager::LOAD() {
         		tokens.push_back(token);
     		}
 			q.push(tokens[0],tokens[1],tokens[2]);
+			flog<<tokens[0]<<'/'<<tokens[1]<<'/'<<tokens[2]<<endl;
 		}
-		
+		flog<<"======================"<<endl;
 	}
 	
 }
 
-void Manager::ADD() {
+void Manager::ADD(const string& parameter) {
+	string token;
+	vector<string> tokens;
+	stringstream ss(parameter);
+
+	while (getline(ss, token, '|')) {
+		tokens.push_back(token);
+	}
+	if(tokens.size()<3){
+		flog<<"========ERROR========"<<endl;
+		flog<<"200"<<endl;
+		flog<<"======================"<<endl;
+		return;
+	}
+	try
+	{
+		q.push(tokens[0],tokens[1],tokens[2]);
+		flog<<"========ADD========"<<endl;
+		flog<<tokens[0]<<'/'<<tokens[1]<<'/'<<tokens[2]<<endl;
+		flog<<"======================"<<endl;
+	}
+	catch(const char* errorMessage)
+	{
+		flog<<"========ERROR========"<<endl;
+		flog<<"200"<<endl;
+		flog<<"======================"<<endl;
+	}
 	
 }
 

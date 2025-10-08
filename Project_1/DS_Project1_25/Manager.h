@@ -22,7 +22,7 @@ public:
 	void run(const char* command);
 
 	void LOAD();
-	void ADD();
+	void ADD(const string& parameter);
 	void QPOP();
 	void SEARCH();
 	void MAKEPL();

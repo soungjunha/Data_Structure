@@ -31,12 +31,19 @@ public:
 	~MusicQueueNode() {
 	}
 
-	void insert(string artist,string title,string run_time) {
-		next=new MusicQueueNode(artist,title,run_time);
+	void insert(const string& artist,const string& title,const string& run_time) {
+		try
+		{
+			next=new MusicQueueNode(artist,title,run_time);
+		}
+		catch(const char* errorMessage)
+		{
+			throw "node is not exist";
+		}
 		next->prev=this;
 	}
 
-	bool exist(string artist,string title,string run_time) {
+	bool exist(const string& artist,const string& title,const string& run_time) {
 		return (artist!=""&&title!=""&&run_time!="");
 	}
 

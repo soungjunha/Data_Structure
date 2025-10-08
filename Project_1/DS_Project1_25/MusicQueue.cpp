@@ -43,7 +43,14 @@ void MusicQueue::push(string artist,string title,string run_time) {
     {
         if(exist(artist,title,run_time))
         {
-            rear->insert(artist,title,run_time);
+            try
+            {
+                rear->insert(artist,title,run_time);
+            }
+            catch(const char* errorMessage)
+            {
+                throw "node is not exist";
+            }
             rear=rear->get_next();
         }
         else
@@ -62,6 +69,9 @@ void MusicQueue::pop(){
     }
     MusicQueueNode* tmp = head;
     head = head->get_next();
+    if (head != nullptr) {
+        head->set_prev(nullptr);
+    }
     delete tmp;
     size--;
     if (head == nullptr) {
