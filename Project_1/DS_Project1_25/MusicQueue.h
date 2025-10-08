@@ -15,5 +15,4 @@ public:
 	void push(string artist,string title,string run_time);
 	void pop();
 	MusicQueueNode* front();
-	MusicQueueNode* back();
 };
