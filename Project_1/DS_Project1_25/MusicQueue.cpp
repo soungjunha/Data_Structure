@@ -73,8 +73,18 @@ void MusicQueue::pop(){
 MusicQueueNode* MusicQueue::front() {
     if (!empty())
     {
-        MusicQueueNode* tmp=head;
-        return tmp;
+        return head;
+    }
+    else
+    {
+        throw "queue is empty";
+    }
+
+}
+MusicQueueNode* MusicQueue::back() {
+    if (!empty())
+    {
+        return rear;
     }
     else
     {

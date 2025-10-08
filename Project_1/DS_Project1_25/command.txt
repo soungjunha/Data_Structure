@@ -1,4 +1,5 @@
 LOAD
+LOAD
 ADD KDA|pop stars|3:23
 ADD N.Flying|songbird|3:46
 QPOP

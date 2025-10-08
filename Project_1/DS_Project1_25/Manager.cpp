@@ -2,7 +2,9 @@
 #include <string>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -38,7 +40,6 @@ void Manager::run(const char* command) {
 				keyword = line;
 				parameter = "";
 			}
-			
 			if (keyword=="LOAD")
 			{
 				LOAD();
@@ -84,6 +85,29 @@ void Manager::run(const char* command) {
 
 void Manager::LOAD() {
 	ifstream music_list("Music_List.txt");
+	if (!q.empty()||!music_list.is_open())
+	{
+		flog<<"========ERROR========"<<endl;
+		flog<<"100"<<endl;
+		flog<<"======================"<<endl;
+	}
+	else
+	{
+		string line;
+		while (getline(music_list, line))
+		{
+			string token;
+			vector<string> tokens;
+			stringstream ss(line);
+
+			while (getline(ss, token, '|')) {
+        		tokens.push_back(token);
+    		}
+			q.push(tokens[0],tokens[1],tokens[2]);
+			cout<<q.back()->get_artist()<<' '<<tokens[0]<<endl;
+		}
+		
+	}
 	
 }
 
