@@ -55,7 +55,6 @@ Time :17min 17sec
 ======================
 ========ERROR========
 500
-not exist
 ======================
 ========MAKEPL========
 N.Flying/blue moon/3:36
@@ -82,7 +81,135 @@ Time :29min 08sec
 ======================
 ========ERROR========
 500
-500
+======================
+========Print========
+ArtistBST
+BTS/dynamite/3:19
+Buzz/my love/4:05
+Hyorin/blue moon/3:24
+IU/blueming/3:37
+KDA/pop stars/3:23
+Maroon 5/sugar/3:55
+Michael Jackson/beat it/4:18
+N.Flying/blue moon/3:36
+N.Flying/moonshot/3:26
+N.Flying/songbird/3:46
+N.Flying/rooftop/3:19
+N.Flying/oh really./3:10
+PSY/gangnam style/3:25
+PSY/gentleman/3:14
+PSY/daddy/3:32
+PSY/new face/3:16
+PSY/that that/3:05
+Westlife/my love/3:51
+======================
+========Print========
+TitleBST
+Michael Jackson/beat it/4:18
+N.Flying/blue moon/3:36
+Hyorin/blue moon/3:24
+IU/blueming/3:37
+PSY/daddy/3:32
+BTS/dynamite/3:19
+PSY/gangnam style/3:25
+PSY/gentleman/3:14
+N.Flying/moonshot/3:26
+Westlife/my love/3:51
+Buzz/my love/4:05
+PSY/new face/3:16
+N.Flying/oh really./3:10
+KDA/pop stars/3:23
+N.Flying/rooftop/3:19
+N.Flying/songbird/3:46
+Maroon 5/sugar/3:55
+PSY/that that/3:05
+======================
+========Print========
+N.Flying/blue moon/3:36
+N.Flying/moonshot/3:26
+N.Flying/songbird/3:46
+N.Flying/rooftop/3:19
+N.Flying/oh really./3:10
+Westlife/my love/3:51
+Buzz/my love/4:05
+Maroon 5/sugar/3:55
+Count :8/10
+Time :29min 08sec
+======================
+========Print========
+ArtistBST
+BTS/dynamite/3:19
+Buzz/my love/4:05
+Hyorin/blue moon/3:24
+IU/blueming/3:37
+KDA/pop stars/3:23
+Maroon 5/sugar/3:55
+Michael Jackson/beat it/4:18
+N.Flying/blue moon/3:36
+N.Flying/moonshot/3:26
+N.Flying/songbird/3:46
+N.Flying/rooftop/3:19
+N.Flying/oh really./3:10
+PSY/gangnam style/3:25
+PSY/gentleman/3:14
+PSY/daddy/3:32
+PSY/new face/3:16
+PSY/that that/3:05
+Westlife/my love/3:51
+======================
+========Print========
+ArtistBST
+BTS/dynamite/3:19
+Buzz/my love/4:05
+Hyorin/blue moon/3:24
+IU/blueming/3:37
+KDA/pop stars/3:23
+Maroon 5/sugar/3:55
+Michael Jackson/beat it/4:18
+N.Flying/blue moon/3:36
+N.Flying/moonshot/3:26
+N.Flying/songbird/3:46
+N.Flying/rooftop/3:19
+N.Flying/oh really./3:10
+PSY/gangnam style/3:25
+PSY/gentleman/3:14
+PSY/daddy/3:32
+PSY/new face/3:16
+PSY/that that/3:05
+Westlife/my love/3:51
+======================
+========Print========
+TitleBST
+Michael Jackson/beat it/4:18
+N.Flying/blue moon/3:36
+Hyorin/blue moon/3:24
+IU/blueming/3:37
+PSY/daddy/3:32
+BTS/dynamite/3:19
+PSY/gangnam style/3:25
+PSY/gentleman/3:14
+N.Flying/moonshot/3:26
+Westlife/my love/3:51
+Buzz/my love/4:05
+PSY/new face/3:16
+N.Flying/oh really./3:10
+KDA/pop stars/3:23
+N.Flying/rooftop/3:19
+N.Flying/songbird/3:46
+Maroon 5/sugar/3:55
+PSY/that that/3:05
+======================
+========Print========
+N.Flying/blue moon/3:36
+N.Flying/moonshot/3:26
+N.Flying/songbird/3:46
+N.Flying/rooftop/3:19
+N.Flying/oh really./3:10
+Westlife/my love/3:51
+Buzz/my love/4:05
+Maroon 5/sugar/3:55
+Count :8/10
+Time :29min 08sec
 ======================
 ========ERROR========
 1000

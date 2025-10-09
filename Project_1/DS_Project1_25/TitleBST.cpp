@@ -81,12 +81,27 @@ vector<pair<string,string>> TitleBST::search(const string& title) {
 
 }
 
-void TitleBST::print(const string& title) {
-
+void TitleBST::print(ofstream& flog) {
+    if(empty()) throw "BST is empty";
+    flog << "========Print========" << endl;
+	flog << "TitleBST" << endl;
+    print(flog,root);
+    flog << "======================" << endl;
 }
 
-void TitleBST::delete_node(const string& title) {
-
+void TitleBST::print(ofstream& flog,const TitleBSTNode* node) {
+    if(node!=nullptr)
+    {
+        print(flog,node->get_left());
+        for (int i = 0; i < node->get_artist().size(); i++)
+        {
+            int min = node->get_rt()[i] / 60;
+            int sec = node->get_rt()[i] % 60;
+            string run_time=to_string(min)+':'+(sec < 10 ? "0" : "")+to_string(sec);
+            flog<<node->get_artist()[i]<<'/'<<node->get_title()<<'/'<<run_time<<endl;
+        }
+        print(flog,node->get_right());
+    }
 }
 
 void TitleBST::clear(TitleBSTNode* node) {

@@ -2,10 +2,12 @@
 
 #include "MusicQueueNode.h"
 
+#include <fstream>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <utility>
 
 class TitleBSTNode {
 private:

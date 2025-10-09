@@ -51,7 +51,7 @@ void PlayList::delete_node(const string& artist,const string& title) {
 }
 
 bool PlayList::empty() {
-    return count==0;
+    return head==nullptr;
 }
 
 bool PlayList::full() {

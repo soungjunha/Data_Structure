@@ -62,7 +62,7 @@ void Manager::run(const char* command) {
 			}
 			else if (keyword=="PRINT")
 			{
-				PRINT();
+				PRINT(parameter);
 			}
 			else if (keyword=="DELETE")
 			{
@@ -368,13 +368,48 @@ void Manager::MAKEPL(const string& parameter) {
 	catch (const char* errorMessage) {
         flog << "========ERROR========" << endl;
 		flog << "500" << endl;
-		flog << errorMessage << endl;
 		flog << "======================" << endl;
 	}
 	
 }
 
-void Manager::PRINT() {
+void Manager::PRINT(const string& parameter) {
+	try
+	{
+		if (parameter=="ARTIST")
+		{
+			ab.print(flog);
+		}
+		else if (parameter=="TITLE")
+		{
+			tb.print(flog);
+		}
+		else if (parameter=="LIST")
+		{
+			if (!pl.empty())
+			{
+				flog << "========Print========" << endl;
+				pl.print(flog);
+				flog << "======================" << endl;
+			}
+			else {
+				throw "600";
+            }
+			
+		}
+		else
+		{
+			throw "600";
+		}
+		
+		
+	}
+	catch (const char* errorMessage) {
+        flog << "========ERROR========" << endl;
+		flog << "600" << endl;
+		flog << errorMessage << endl;
+		flog << "======================" << endl;
+	}
 	
 }
 

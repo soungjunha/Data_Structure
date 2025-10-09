@@ -1,8 +1,6 @@
 #pragma once
 
 #include "ArtistBSTNode.h"
-#include <string>
-#include <utility>
 
 using namespace std;
 
@@ -20,8 +18,11 @@ public:
 
 	void insert(const MusicQueueNode* node);
 	vector<pair<string,string>> search(const string& parameter);
-	void print(const string& artist);
+	void print(ofstream& flog);
+	void print(ofstream& flog,const ArtistBSTNode* node);
 	void delete_node(const string& artist);
 	void clear(ArtistBSTNode* node);
+
+	bool empty(){return root==nullptr; }
 
 };

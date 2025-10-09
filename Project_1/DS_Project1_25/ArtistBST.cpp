@@ -79,8 +79,27 @@ vector<pair<string,string>> ArtistBST::search(const string& artist) {
 
 }
 
-void ArtistBST::print(const string& artist) {
+void ArtistBST::print(ofstream& flog) {
+    if(empty()) throw "BST is empty";
+    flog << "========Print========" << endl;
+	flog << "ArtistBST" << endl;
+    print(flog,root);
+    flog << "======================" << endl;
+}
 
+void ArtistBST::print(ofstream& flog,const ArtistBSTNode* node) {
+    if(node!=nullptr)
+    {
+        print(flog,node->get_left());
+        for (int i = 0; i < node->get_title().size(); i++)
+        {
+            int min = node->get_rt()[i] / 60;
+            int sec = node->get_rt()[i] % 60;
+            string run_time=to_string(min)+':'+(sec < 10 ? "0" : "")+to_string(sec);
+            flog<<node->get_artist()<<'/'<<node->get_title()[i]<<'/'<<run_time<<endl;
+        }
+        print(flog,node->get_right());
+    }
 }
 
 void ArtistBST::delete_node(const string& artist) {

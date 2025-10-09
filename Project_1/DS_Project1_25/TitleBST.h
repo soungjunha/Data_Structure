@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TitleBSTNode.h"
-#include <utility>
 
 using namespace std;
 
@@ -18,7 +17,10 @@ public:
 
 	void insert(const MusicQueueNode* node);
 	vector<pair<string,string>> search(const string& title);
-	void print(const string& title);
+	void print(ofstream& flog);
+	void print(ofstream& flog,const TitleBSTNode* title);
 	void delete_node(const string& title);
 	void clear(TitleBSTNode* node);
+
+	bool empty(){return root==nullptr; }
 };

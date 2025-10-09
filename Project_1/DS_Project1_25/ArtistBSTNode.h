@@ -1,9 +1,13 @@
 #pragma once
 
 #include "MusicQueueNode.h"
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <string>
+#include <utility>
+
 
 class ArtistBSTNode {
 private:
