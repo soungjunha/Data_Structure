@@ -1,11 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include "TitleBSTNode.h"
 
 using namespace std;
-
-class TitleBSTNode;
 
 class TitleBST {
 private:
@@ -18,8 +15,9 @@ public:
 	TitleBST();
 	~TitleBST();
 
-	void insert();
-	void search();
-	void print();
-	void delete_node();
+	void insert(const MusicQueueNode* node);
+	void search(const string& title);
+	void print(const string& title);
+	void delete_node(const string& title);
+	void clear(TitleBSTNode* node);
 };

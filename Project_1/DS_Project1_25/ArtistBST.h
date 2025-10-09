@@ -1,10 +1,9 @@
 #pragma once
 
+#include "ArtistBSTNode.h"
 #include <string>
 
 using namespace std;
-
-class ArtistBSTNode;
 
 class ArtistBST {
 private:
@@ -18,9 +17,10 @@ public:
 	ArtistBST();
 	~ArtistBST();
 
-	void insert();
-	void search();
-	void print();
-	void delete_node();
+	void insert(const MusicQueueNode* node);
+	void search(const string& artist);
+	void print(const string& artist);
+	void delete_node(const string& artist);
+	void clear(ArtistBSTNode* node);
 
 };

@@ -120,7 +120,7 @@ void Manager::ADD(const string& parameter) {
 	while (getline(ss, token, '|')) {
 		tokens.push_back(token);
 	}
-	if(tokens.size()<3){
+	if(tokens.size()!=3){
 		flog<<"========ERROR========"<<endl;
 		flog<<"200"<<endl;
 		flog<<"======================"<<endl;
@@ -143,10 +143,38 @@ void Manager::ADD(const string& parameter) {
 }
 
 void Manager::QPOP() {
+	if (q.empty())
+	{
+		flog<<"========ERROR========"<<endl;
+		flog<<"300"<<endl;
+		flog<<"======================"<<endl;
+		return;
+	}
+	else
+	{
+		while (!q.empty())
+		{
+			try
+			{
+				ab.insert(q.front());
+				tb.insert(q.front());
+			}
+			catch(const char* errorMessage)
+			{
+				flog<<"========ERROR========"<<endl;
+				flog<<"300"<<endl;
+				flog<<"======================"<<endl;
+			}
+			q.pop();
+		}
+		flog<<"========QPOP========"<<endl;
+		flog<<"Success"<<endl;
+		flog<<"======================"<<endl;
+	}
 	
 }
 
-void Manager::SEARCH() {
+void Manager::SEARCH(const string& parameter) {
 	
 }
 

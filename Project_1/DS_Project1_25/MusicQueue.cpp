@@ -83,8 +83,7 @@ void MusicQueue::pop(){
 MusicQueueNode* MusicQueue::front() {
     if (!empty())
     {
-        MusicQueueNode* tmp=head;
-        return tmp;
+        return head;
     }
     else
     {

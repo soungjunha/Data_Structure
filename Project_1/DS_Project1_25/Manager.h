@@ -24,7 +24,7 @@ public:
 	void LOAD();
 	void ADD(const string& parameter);
 	void QPOP();
-	void SEARCH();
+	void SEARCH(const string& parameter);
 	void MAKEPL();
 	void PRINT();
 	void DELETE();
