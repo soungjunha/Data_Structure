@@ -241,7 +241,7 @@ void Manager::SEARCH(const string& parameter) {
 				flog << artist << '/' << title << '/' << (*song).second << endl;
 				flog << "======================" << endl;
 				} else {
-					throw "Song not found for the given artist";
+					throw "Song not found";
 				}
             }
 			else {
@@ -270,6 +270,99 @@ void Manager::SEARCH(const string& parameter) {
 void Manager::MAKEPL(const string& parameter) {
 	try
 	{
+		vector<pair<string,string>>res_vec;
+        stringstream ss(parameter);
+        string command;
+
+        ss >> command;
+
+        if (command == "ARTIST" || command == "TITLE") {
+            string arg;
+			
+            ss >> ws;
+            getline(ss, arg);
+
+            if (arg.empty()) {
+                throw "500";
+            }
+
+            if (command == "ARTIST") {
+                res_vec=ab.search(arg);
+				if (res_vec.size()<(10-pl.get_count()))
+				{
+					for (const pair<string,string>& music:res_vec)
+					{
+						string min,sec;
+						size_t pos=music.second.find(':');
+						min = music.second.substr(0, pos);
+						sec = music.second.substr(pos + 1);
+						pl.insert_node(arg,music.first,stoi(min)*60+stoi(sec));
+					}
+				}
+				else
+				{
+					throw "500";
+				}
+				
+            }
+			else {
+                res_vec=tb.search(arg);
+				if (res_vec.size()<(10-pl.get_count()))
+				{
+					for (const pair<string,string>& music:res_vec)
+					{
+						string min,sec;
+						size_t pos=music.second.find(':');
+						min = music.second.substr(0, pos);
+						sec = music.second.substr(pos + 1);
+						pl.insert_node(music.first,arg,stoi(min)*60+stoi(sec));
+					}
+				}
+				else
+				{
+					throw "500";
+				}
+            }
+
+        }
+        else if (command == "SONG") {
+            string title, artist;
+            string remain;
+
+            ss >> ws;
+            getline(ss, remain);
+
+            stringstream songStream(remain);
+            
+            if (getline(songStream, artist, '|') && getline(songStream, title)) {
+                if (title.empty() || artist.empty()) {
+                    throw "500";
+                }
+                res_vec=ab.search(artist);
+				auto song = find_if(res_vec.begin(), res_vec.end(), [&](const pair<string, string>& p) {return p.first == title;});
+				
+				if (song != res_vec.end()) {
+					string min,sec;
+					size_t pos=(*song).second.find(':');
+					min = (*song).second.substr(0, pos);
+					sec = (*song).second.substr(pos + 1);
+					pl.insert_node(artist,title,stoi(min)*60+stoi(sec));
+				} 
+				else {
+					throw "Song not found";
+				}
+            }
+			else {
+				throw "500";
+            }
+        }
+        else {
+            throw "500";
+        }
+
+		flog << "========MAKEPL========" << endl;
+		pl.print(flog);
+   		flog << "======================" << endl;
 		
 	}
 	catch (const char* errorMessage) {

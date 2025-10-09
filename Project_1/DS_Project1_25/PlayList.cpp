@@ -5,19 +5,23 @@ PlayList::PlayList():head(nullptr),cursor(nullptr),count(0),time(0),data("") {
 }
 
 PlayList::~PlayList() {
-    while (head!=nullptr)
-    {
-        PlayListNode* tmp=head;
-        head=head->get_next();
+    if (head == nullptr) {
+        return;
+    }
+
+    PlayListNode* tail = head->get_prev();
+    tail->set_next(nullptr);
+
+    while (head != nullptr) {
+        PlayListNode* tmp = head;
+        head = head->get_next();
         delete tmp;
     }
-    count=0;
-    time=0;
 }
 
 void PlayList::insert_node(const string& artist,const string& title,const int& runtime) {
 
-    if (!exist(artist,title)&&full())
+    if (!exist(artist,title)||full())
     {
         throw "not exist";
     }
@@ -39,6 +43,7 @@ void PlayList::insert_node(const string& artist,const string& title,const int& r
         cursor->set_next(new_node);
     }
     count++;
+    time+=runtime;
 }
 
 void PlayList::delete_node(const string& artist,const string& title) {
@@ -69,10 +74,24 @@ bool PlayList::exist(const string& artist, const string& title) {
     return true;
 }
 
-string PlayList::print() {
-    return 0;
+void PlayList::print(ofstream& flog) {
+
+    cursor=head;
+    do{
+        int min = cursor->get_runtime() / 60;
+        int sec = cursor->get_runtime() % 60;
+        string runtime=to_string(min)+':'+(sec < 10 ? "0" : "")+to_string(sec);
+        flog<<cursor->get_artist()<<'/'<<cursor->get_title()<<'/'<<runtime<<endl;
+        cursor=cursor->get_next();
+    }while (cursor!=head);
+    flog<<"Count :"<<count<<"/10"<<endl;
+    flog<<"Time :"<<run_time()<<endl;
 }
 
-int PlayList::run_time() {
-    return 0;
+string PlayList::run_time() {
+
+    int min = time / 60;
+    int sec = time % 60;
+
+    return to_string(min)+"min "+(sec < 10 ? "0" : "")+to_string(sec)+"sec";
 }

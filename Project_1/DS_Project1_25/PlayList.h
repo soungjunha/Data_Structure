@@ -18,6 +18,9 @@ public:
 	bool empty();
 	bool full();
 	bool exist(const string& artist, const string& title);
-	string print();
-	int run_time();
+	void print(ofstream& flog);
+	string run_time();
+
+	int get_count()const{return count; }
+
 };
