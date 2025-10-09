@@ -2,6 +2,7 @@
 
 #include "ArtistBSTNode.h"
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ public:
 	~ArtistBST();
 
 	void insert(const MusicQueueNode* node);
-	void search(const string& artist);
+	vector<pair<string,string>> search(const string& parameter);
 	void print(const string& artist);
 	void delete_node(const string& artist);
 	void clear(ArtistBSTNode* node);

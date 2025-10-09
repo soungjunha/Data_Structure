@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TitleBSTNode.h"
+#include <utility>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ public:
 	~TitleBST();
 
 	void insert(const MusicQueueNode* node);
-	void search(const string& title);
+	vector<pair<string,string>> search(const string& title);
 	void print(const string& title);
 	void delete_node(const string& title);
 	void clear(TitleBSTNode* node);

@@ -55,6 +55,9 @@ public:
 	}
 
 	string get_title() const { return title; }
+	vector<string> get_artist() const { return artist; }
+	vector<int> get_rt() const { return rt; }
+
     TitleBSTNode* get_left() const { return left; }
     TitleBSTNode* get_right() const { return right; }
 	

@@ -47,7 +47,35 @@ void ArtistBST::insert(const MusicQueueNode* node) {
     }
 }
 
-void ArtistBST::search(const string& artist) {
+vector<pair<string,string>> ArtistBST::search(const string& artist) {
+
+    target=root;
+
+    while (target!=nullptr)
+    {
+        
+        if (artist == target->get_artist()) {
+            vector<pair<string, string>> result;
+            auto const& titles = target->get_title();
+            auto const& rts = target->get_rt();
+            for (int i = 0; i < target->get_title().size(); i++)
+            {
+                int min = rts[i] / 60;
+                int sec = rts[i] % 60;
+                string tmp=to_string(min)+':'+(sec < 10 ? "0" : "")+to_string(sec);
+                result.push_back(pair<string, string>(titles[i],tmp));
+            }
+            return result;
+        }
+        else if (artist < target->get_artist()) {
+            target = target->get_left();
+        }
+        else {
+            target = target->get_right();
+        }
+        
+    }
+    throw "not found";
 
 }
 

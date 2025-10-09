@@ -25,7 +25,7 @@ public:
 	void ADD(const string& parameter);
 	void QPOP();
 	void SEARCH(const string& parameter);
-	void MAKEPL();
+	void MAKEPL(const string& parameter);
 	void PRINT();
 	void DELETE();
 	void EXIT();

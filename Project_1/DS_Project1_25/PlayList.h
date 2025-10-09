@@ -1,9 +1,6 @@
 #pragma once
-#include <string>
 
-using namespace std;
-
-class PlayListNode;
+#include "PlayListNode.h"
 
 class PlayList {
 private:
@@ -16,11 +13,11 @@ private:
 public:
 	PlayList();
 	~PlayList();
-	void insert_node();
-	void delete_node();
+	void insert_node(const string& artist,const string& title,const int& runtime);
+	void delete_node(const string& artist,const string& title);
 	bool empty();
 	bool full();
-	bool exist();
+	bool exist(const string& artist, const string& title);
 	string print();
 	int run_time();
 };

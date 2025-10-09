@@ -54,11 +54,11 @@ void Manager::run(const char* command) {
 			}
 			else if (keyword=="SEARCH")
 			{
-				SEARCH();
+				SEARCH(parameter);
 			}
 			else if (keyword=="MAKEPL")
 			{
-				MAKEPL();
+				MAKEPL(parameter);
 			}
 			else if (keyword=="PRINT")
 			{
@@ -175,10 +175,109 @@ void Manager::QPOP() {
 }
 
 void Manager::SEARCH(const string& parameter) {
+	try {
+		vector<pair<string,string>>res_vec;
+        stringstream ss(parameter);
+        string command;
+
+        ss >> command;
+
+        if (command == "ARTIST" || command == "TITLE") {
+            string arg;
+			
+            ss >> ws;
+            getline(ss, arg);
+
+            if (arg.empty()) {
+                flog << "========ERROR========" << endl;
+				flog << "400" << endl;
+				flog << "======================" << endl;
+                return;
+            }
+
+            if (command == "ARTIST") {
+                res_vec=ab.search(arg);
+            }
+			else {
+                res_vec=tb.search(arg);
+            }
+
+			flog << "========SEARCH========" << endl;
+			for (int i = 0; i < res_vec.size(); i++)
+			{
+				if(command == "ARTIST")
+				{
+					flog<<arg+'/'+res_vec[i].first+'/'+res_vec[i].second<<endl;
+				}
+				else
+				{
+					flog<<res_vec[i].first+'/'+arg+'/'+res_vec[i].second<<endl;
+				}
+			}
+			flog << "======================" << endl;
+
+        }
+        else if (command == "SONG") {
+            string title, artist;
+            string remain;
+
+            ss >> ws;
+            getline(ss, remain);
+
+            stringstream songStream(remain);
+            
+            if (getline(songStream, artist, '|') && getline(songStream, title)) {
+                if (title.empty() || artist.empty()) {
+                    flog << "========ERROR========" << endl;
+					flog << "400" << endl;
+					flog << "======================" << endl;
+                    return;
+                }
+                res_vec=ab.search(artist);
+				auto song = find_if(res_vec.begin(), res_vec.end(), [&](const pair<string, string>& p) {return p.first == title;});
+				
+				if (song != res_vec.end()) {
+				flog << "========SEARCH========" << endl;
+				flog << artist << '/' << title << '/' << (*song).second << endl;
+				flog << "======================" << endl;
+				} else {
+					throw "Song not found for the given artist";
+				}
+            }
+			else {
+				flog << "========ERROR========" << endl;
+				flog << "400" << endl;
+				flog << "======================" << endl;
+                return;
+            }
+        }
+        else {
+            flog << "========ERROR========" << endl;
+			flog << "400" << endl;
+			flog << "======================" << endl;
+            return;
+        }
+    }
+    catch (const char* errorMessage) {
+        flog << "========ERROR========" << endl;
+		flog << "400" << endl;
+		flog << "======================" << endl;
+	}
 	
+
 }
 
-void Manager::MAKEPL() {
+void Manager::MAKEPL(const string& parameter) {
+	try
+	{
+		
+	}
+	catch (const char* errorMessage) {
+        flog << "========ERROR========" << endl;
+		flog << "500" << endl;
+		flog << errorMessage << endl;
+		flog << "======================" << endl;
+	}
 	
 }
 
