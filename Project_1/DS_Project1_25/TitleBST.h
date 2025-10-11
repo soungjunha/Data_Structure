@@ -14,7 +14,9 @@ private:
 	TitleBSTNode* delete_node_recursive(TitleBSTNode* node, const string& title);
 	TitleBSTNode* find_min_node(TitleBSTNode* node);
 	TitleBSTNode* find_node(const string& title);
-	void collect_artist_songs(TitleBSTNode* node, const string& artist, vector<string>& titles_to_delete, vector<TitleBSTNode*>& nodes_to_modify);
+	
+	// [수정] 아티스트의 노래를 '하나만' 찾는 새로운 private 함수
+	void find_first_song_by_artist(TitleBSTNode* node, const string& artist, bool& found, string& title_to_delete, TitleBSTNode*& node_to_modify);
 
 	void clear(TitleBSTNode* node);
 

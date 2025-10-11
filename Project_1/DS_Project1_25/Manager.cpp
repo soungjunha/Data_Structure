@@ -13,8 +13,7 @@ Manager::Manager() {
 }
 
 Manager::~Manager() {
-	fcmd.close();
-	flog.close();
+	
 }
 
 void Manager::run(const char* command) {
@@ -71,6 +70,7 @@ void Manager::run(const char* command) {
 			else if (keyword=="EXIT")
 			{
 				EXIT();
+				break;
 			}
 			else
 			{
@@ -434,11 +434,13 @@ void Manager::DELETE(const string& parameter) {
 				flog << "\n===========ARTIST===========" << endl;
 				tb.delete_artist(arg);
 				ab.delete_node(arg);
+				pl.delete_node(arg);
             }
 			else {
 				flog << "\n===========TITLE===========" << endl;
                 tb.delete_node(arg);
 				ab.delete_title(arg);
+				pl.delete_node(arg);
             }
 
         }
@@ -455,8 +457,10 @@ void Manager::DELETE(const string& parameter) {
                 if (title.empty() || artist.empty()) {
                     throw "7002";
                 }
+				flog << "\n===========SONG===========" << endl;
                 tb.delete_song(artist,title);
 				ab.delete_song(artist,title);
+				pl.delete_node(false,artist,title);
             }
 			else {
 				throw "7003";
@@ -475,7 +479,8 @@ void Manager::DELETE(const string& parameter) {
                 if (title.empty() || artist.empty()) {
                     throw "7004";
                 }
-                
+				flog << "\n===========LIST===========" << endl;
+                pl.delete_node(true,artist,title);
             }
 			else {
 				throw "7005";
@@ -499,5 +504,9 @@ void Manager::DELETE(const string& parameter) {
 }
 
 void Manager::EXIT() {
-
+	flog<<"========EXIT========"<<endl;
+	flog<<"Success"<<endl;
+	flog<<"======================"<<endl;
+	fcmd.close();
+	flog.close();
 }

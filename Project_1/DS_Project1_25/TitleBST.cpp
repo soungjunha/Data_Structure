@@ -150,38 +150,64 @@ void TitleBST::delete_artist(const string& artist) {
         throw "Cannot delete from an empty BST.";
     }
 
-    vector<string> titles_to_delete;
-    vector<TitleBSTNode*> nodes_to_modify;
-    
-    collect_artist_songs(root, artist, titles_to_delete, nodes_to_modify);
+    bool artist_was_ever_found = false;
 
-    if (titles_to_delete.empty() && nodes_to_modify.empty()) {
-        throw "Artist not found in the BST.";
-    }
+    while (true) {
+        bool found_this_iteration = false;
+        string title_to_delete = "";
+        TitleBSTNode* node_to_modify = nullptr;
 
-    for (TitleBSTNode* node : nodes_to_modify) {
-        node->remove_artist(artist);
-    }
-    for (const string& title : titles_to_delete) {
-        delete_node(title);
-    }
-}
+        // 매번 트리의 처음(root)부터 다시 검색해서 아티스트의 노래를 '하나만' 찾음
+        find_first_song_by_artist(root, artist, found_this_iteration, title_to_delete, node_to_modify);
 
-void TitleBST::collect_artist_songs(TitleBSTNode* node, const string& artist, vector<string>& titles_to_delete, vector<TitleBSTNode*>& nodes_to_modify) {
-    if (node == nullptr) return;
+        if (found_this_iteration) {
+            artist_was_ever_found = true; // 아티스트를 한 번이라도 찾았음을 기록
 
-    collect_artist_songs(node->get_left(), artist, titles_to_delete, nodes_to_modify);
-
-    if (node->search(artist) != -1) {
-        if (node->get_artist().size() == 1) {
-            titles_to_delete.push_back(node->get_title());
+            if (!title_to_delete.empty()) {
+                // 사례 1: 해당 노래의 유일한 아티스트인 경우, 노드 전체를 삭제
+                delete_node(title_to_delete);
+            } else if (node_to_modify != nullptr) {
+                // 사례 2: 다른 아티스트도 있는 경우, 해당 아티스트 정보만 제거
+                node_to_modify->remove_artist(artist);
+            }
         } else {
-            nodes_to_modify.push_back(node);
+            // 이번 탐색에서 아티스트의 노래를 더 이상 찾지 못했다면, 루프 종료
+            break;
         }
     }
-    
-    collect_artist_songs(node->get_right(), artist, titles_to_delete, nodes_to_modify);
+
+    // 루프가 끝날 때까지 아티스트를 한 번도 찾지 못했다면 예외 발생
+    if (!artist_was_ever_found) {
+        throw "Artist not found in the BST.";
+    }
 }
+
+void TitleBST::find_first_song_by_artist(TitleBSTNode* node, const string& artist, bool& found, string& title_to_delete, TitleBSTNode*& node_to_modify) {
+    if (node == nullptr || found) {
+        return; // 노드가 없거나, 이미 다른 곳에서 찾았다면 즉시 중단
+    }
+
+    // 왼쪽 서브트리 탐색
+    find_first_song_by_artist(node->get_left(), artist, found, title_to_delete, node_to_modify);
+
+    if (found) return; // 왼쪽에서 찾았다면 더 이상 진행하지 않고 중단
+
+    // 현재 노드 확인
+    if (node->search(artist) != -1) {
+        found = true; // 찾았음을 표시
+        if (node->get_artist().size() == 1) {
+            title_to_delete = node->get_title();
+        } else {
+            node_to_modify = node;
+        }
+    }
+
+    if (found) return; // 현재 노드에서 찾았다면 더 이상 진행하지 않고 중단
+
+    // 오른쪽 서브트리 탐색
+    find_first_song_by_artist(node->get_right(), artist, found, title_to_delete, node_to_modify);
+}
+
 
 TitleBSTNode* TitleBST::find_node(const string& title) {
     TitleBSTNode* current = root;

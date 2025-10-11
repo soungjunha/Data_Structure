@@ -14,7 +14,8 @@ private:
 	ArtistBSTNode* delete_node_recursive(ArtistBSTNode* node, const string& artist);
 	ArtistBSTNode* find_min_node(ArtistBSTNode* node);
 	ArtistBSTNode* find_node(const std::string& artist);
-	void collect_title_songs(ArtistBSTNode* node, const string& title,vector<string>& artists_to_delete, vector<ArtistBSTNode*>& nodes_to_modify);
+	
+	void find_first_artist_by_title(ArtistBSTNode* node, const string& title, bool& found, string& artist_to_delete, ArtistBSTNode*& node_to_modify);
 
 	void clear(ArtistBSTNode* node);
 
