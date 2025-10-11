@@ -427,7 +427,7 @@ void Manager::DELETE(const string& parameter) {
             getline(ss, arg);
 
             if (arg.empty()) {
-                throw "7001";
+                throw "700";
             }
 
             if (type == "ARTIST") {
@@ -437,7 +437,6 @@ void Manager::DELETE(const string& parameter) {
 				pl.delete_node(arg);
             }
 			else {
-				flog << "\n===========TITLE===========" << endl;
                 tb.delete_node(arg);
 				ab.delete_title(arg);
 				pl.delete_node(arg);
@@ -455,15 +454,14 @@ void Manager::DELETE(const string& parameter) {
             
             if (getline(songStream, artist, '|') && getline(songStream, title)) {
                 if (title.empty() || artist.empty()) {
-                    throw "7002";
+                    throw "700";
                 }
-				flog << "\n===========SONG===========" << endl;
                 tb.delete_song(artist,title);
 				ab.delete_song(artist,title);
 				pl.delete_node(false,artist,title);
             }
 			else {
-				throw "7003";
+				throw "700";
             }
         }
 		else if (type == "LIST") {
@@ -477,17 +475,16 @@ void Manager::DELETE(const string& parameter) {
             
             if (getline(songStream, artist, '|') && getline(songStream, title)) {
                 if (title.empty() || artist.empty()) {
-                    throw "7004";
+                    throw "700";
                 }
-				flog << "\n===========LIST===========" << endl;
                 pl.delete_node(true,artist,title);
             }
 			else {
-				throw "7005";
+				throw "700";
             }
         }
         else {
-            throw "7006";
+            throw "700";
         }
 
 		flog << "========DELETE========" << endl;
@@ -498,7 +495,6 @@ void Manager::DELETE(const string& parameter) {
 	catch (const char* errorMessage) {
         flog << "========ERROR========" << endl;
 		flog << "700" << endl;
-		flog << errorMessage << endl;
 		flog << "======================" << endl;
 	}
 }
