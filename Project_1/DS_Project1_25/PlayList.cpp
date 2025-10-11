@@ -9,14 +9,15 @@ PlayList::~PlayList() {
         return;
     }
 
-    PlayListNode* tail = head->get_prev();
-    tail->set_next(nullptr);
+    PlayListNode* current = head;
+    head->get_prev()->set_next(nullptr); 
 
-    while (head != nullptr) {
-        PlayListNode* tmp = head;
-        head = head->get_next();
-        delete tmp;
+    while (current != nullptr) {
+        PlayListNode* next_node = current->get_next();
+        delete current;
+        current = next_node;
     }
+    head = nullptr;
 }
 
 void PlayList::insert_node(const string& artist,const string& title,const int& runtime) {
