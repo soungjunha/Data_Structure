@@ -66,7 +66,7 @@ void Manager::run(const char* command) {
 			}
 			else if (keyword=="DELETE")
 			{
-				DELETE();
+				DELETE(parameter);
 			}
 			else if (keyword=="EXIT")
 			{
@@ -178,11 +178,11 @@ void Manager::SEARCH(const string& parameter) {
 	try {
 		vector<pair<string,string>>res_vec;
         stringstream ss(parameter);
-        string command;
+        string type;
 
-        ss >> command;
+        ss >> type;
 
-        if (command == "ARTIST" || command == "TITLE") {
+        if (type == "ARTIST" || type == "TITLE") {
             string arg;
 			
             ss >> ws;
@@ -195,7 +195,7 @@ void Manager::SEARCH(const string& parameter) {
                 return;
             }
 
-            if (command == "ARTIST") {
+            if (type == "ARTIST") {
                 res_vec=ab.search(arg);
             }
 			else {
@@ -205,7 +205,7 @@ void Manager::SEARCH(const string& parameter) {
 			flog << "========SEARCH========" << endl;
 			for (int i = 0; i < res_vec.size(); i++)
 			{
-				if(command == "ARTIST")
+				if(type == "ARTIST")
 				{
 					flog<<arg+'/'+res_vec[i].first+'/'+res_vec[i].second<<endl;
 				}
@@ -217,7 +217,7 @@ void Manager::SEARCH(const string& parameter) {
 			flog << "======================" << endl;
 
         }
-        else if (command == "SONG") {
+        else if (type == "SONG") {
             string title, artist;
             string remain;
 
@@ -272,11 +272,11 @@ void Manager::MAKEPL(const string& parameter) {
 	{
 		vector<pair<string,string>>res_vec;
         stringstream ss(parameter);
-        string command;
+        string type;
 
-        ss >> command;
+        ss >> type;
 
-        if (command == "ARTIST" || command == "TITLE") {
+        if (type == "ARTIST" || type == "TITLE") {
             string arg;
 			
             ss >> ws;
@@ -286,7 +286,7 @@ void Manager::MAKEPL(const string& parameter) {
                 throw "500";
             }
 
-            if (command == "ARTIST") {
+            if (type == "ARTIST") {
                 res_vec=ab.search(arg);
 				if (res_vec.size()<(10-pl.get_count()))
 				{
@@ -325,7 +325,7 @@ void Manager::MAKEPL(const string& parameter) {
             }
 
         }
-        else if (command == "SONG") {
+        else if (type == "SONG") {
             string title, artist;
             string remain;
 
@@ -407,14 +407,95 @@ void Manager::PRINT(const string& parameter) {
 	catch (const char* errorMessage) {
         flog << "========ERROR========" << endl;
 		flog << "600" << endl;
-		flog << errorMessage << endl;
 		flog << "======================" << endl;
 	}
 	
 }
 
-void Manager::DELETE() {
-	
+void Manager::DELETE(const string& parameter) {
+	try
+	{
+        stringstream ss(parameter);
+        string type;
+
+        ss >> type;
+
+        if (type == "ARTIST" || type == "TITLE") {
+            string arg;
+			
+            ss >> ws;
+            getline(ss, arg);
+
+            if (arg.empty()) {
+                throw "7001";
+            }
+
+            if (type == "ARTIST") {
+				flog << "\n===========ARTIST===========" << endl;
+				tb.delete_artist(arg);
+				ab.delete_node(arg);
+            }
+			else {
+				flog << "\n===========TITLE===========" << endl;
+                tb.delete_node(arg);
+				ab.delete_title(arg);
+            }
+
+        }
+        else if (type == "SONG") {
+            string title, artist;
+            string remain;
+
+            ss >> ws;
+            getline(ss, remain);
+
+            stringstream songStream(remain);
+            
+            if (getline(songStream, artist, '|') && getline(songStream, title)) {
+                if (title.empty() || artist.empty()) {
+                    throw "7002";
+                }
+                tb.delete_song(artist,title);
+				ab.delete_song(artist,title);
+            }
+			else {
+				throw "7003";
+            }
+        }
+		else if (type == "LIST") {
+            string title, artist;
+            string remain;
+
+            ss >> ws;
+            getline(ss, remain);
+
+            stringstream songStream(remain);
+            
+            if (getline(songStream, artist, '|') && getline(songStream, title)) {
+                if (title.empty() || artist.empty()) {
+                    throw "7004";
+                }
+                
+            }
+			else {
+				throw "7005";
+            }
+        }
+        else {
+            throw "7006";
+        }
+
+		flog << "========DELETE========" << endl;
+		flog << "Success" << endl;
+   		flog << "======================" << endl;
+		
+	}
+	catch (const char* errorMessage) {
+        flog << "========ERROR========" << endl;
+		flog << "700" << endl;
+		flog << errorMessage << endl;
+		flog << "======================" << endl;
+	}
 }
 
 void Manager::EXIT() {

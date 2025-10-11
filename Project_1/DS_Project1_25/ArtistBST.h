@@ -11,6 +11,12 @@ private:
 	string data;
 	ArtistBSTNode* target;
 
+	ArtistBSTNode* delete_node_recursive(ArtistBSTNode* node, const string& artist);
+	ArtistBSTNode* find_min_node(ArtistBSTNode* node);
+	ArtistBSTNode* find_node(const std::string& artist);
+	void collect_title_songs(ArtistBSTNode* node, const string& title,vector<string>& artists_to_delete, vector<ArtistBSTNode*>& nodes_to_modify);
+
+	void clear(ArtistBSTNode* node);
 
 public:
 	ArtistBST();
@@ -21,7 +27,9 @@ public:
 	void print(ofstream& flog);
 	void print(ofstream& flog,const ArtistBSTNode* node);
 	void delete_node(const string& artist);
-	void clear(ArtistBSTNode* node);
+	void delete_title(const string& title);
+	
+	void delete_song(const string& artist, const string& title);
 
 	bool empty(){return root==nullptr; }
 

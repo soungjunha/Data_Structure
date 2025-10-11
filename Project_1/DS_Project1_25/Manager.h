@@ -27,7 +27,7 @@ public:
 	void SEARCH(const string& parameter);
 	void MAKEPL(const string& parameter);
 	void PRINT(const string& parameter);
-	void DELETE();
+	void DELETE(const string& parameter);
 	void EXIT();
 
 };

@@ -56,6 +56,19 @@ public:
 		}
 	}
 
+	void remove_artist(const std::string& artist_name) {
+		int index = search(artist_name);
+		if (index != -1) {
+			this->artist.erase(this->artist.begin() + index);
+			this->rt.erase(this->rt.begin() + index);
+		}
+	}
+
+	void copy_data_from(const TitleBSTNode* other) {
+		this->artist = other->artist;
+		this->rt = other->rt;
+	}
+
 	string get_title() const { return title; }
 	vector<string> get_artist() const { return artist; }
 	vector<int> get_rt() const { return rt; }

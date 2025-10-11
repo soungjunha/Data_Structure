@@ -104,6 +104,119 @@ void TitleBST::print(ofstream& flog,const TitleBSTNode* node) {
     }
 }
 
+void TitleBST::delete_node(const string& title) {
+    if (root == nullptr) {
+        throw "Cannot delete from an empty BST.";
+    }
+    root = delete_node_recursive(root, title);
+}
+
+TitleBSTNode* TitleBST::delete_node_recursive(TitleBSTNode* node, const string& title) {
+    if (node == nullptr) {
+        throw "Title not found in the BST.456";
+    }
+
+    if (title < node->get_title()) {
+        node->set_left(delete_node_recursive(node->get_left(), title));
+    } else if (title > node->get_title()) {
+        node->set_right(delete_node_recursive(node->get_right(), title));
+    } else {
+        if (node->get_left() == nullptr) {
+            TitleBSTNode* temp = node->get_right();
+            delete node;
+            return temp;
+        } else if (node->get_right() == nullptr) {
+            TitleBSTNode* temp = node->get_left();
+            delete node;
+            return temp;
+        }
+        TitleBSTNode* temp = find_min_node(node->get_right());
+        node->copy_data_from(temp);
+        node->set_right(delete_node_recursive(node->get_right(), temp->get_title()));
+    }
+    return node;
+}
+
+TitleBSTNode* TitleBST::find_min_node(TitleBSTNode* node) {
+    TitleBSTNode* current = node;
+    while (current && current->get_left() != nullptr) {
+        current = current->get_left();
+    }
+    return current;
+}
+
+void TitleBST::delete_artist(const string& artist) {
+    if (root == nullptr) {
+        throw "Cannot delete from an empty BST.";
+    }
+
+    vector<string> titles_to_delete;
+    vector<TitleBSTNode*> nodes_to_modify;
+    
+    collect_artist_songs(root, artist, titles_to_delete, nodes_to_modify);
+
+    if (titles_to_delete.empty() && nodes_to_modify.empty()) {
+        throw "Artist not found in the BST.";
+    }
+
+    for (TitleBSTNode* node : nodes_to_modify) {
+        node->remove_artist(artist);
+    }
+    for (const string& title : titles_to_delete) {
+        delete_node(title);
+    }
+}
+
+void TitleBST::collect_artist_songs(TitleBSTNode* node, const string& artist, vector<string>& titles_to_delete, vector<TitleBSTNode*>& nodes_to_modify) {
+    if (node == nullptr) return;
+
+    collect_artist_songs(node->get_left(), artist, titles_to_delete, nodes_to_modify);
+
+    if (node->search(artist) != -1) {
+        if (node->get_artist().size() == 1) {
+            titles_to_delete.push_back(node->get_title());
+        } else {
+            nodes_to_modify.push_back(node);
+        }
+    }
+    
+    collect_artist_songs(node->get_right(), artist, titles_to_delete, nodes_to_modify);
+}
+
+TitleBSTNode* TitleBST::find_node(const string& title) {
+    TitleBSTNode* current = root;
+    while (current != nullptr) {
+        if (title == current->get_title()) {
+            return current;
+        } else if (title < current->get_title()) {
+            current = current->get_left();
+        } else {
+            current = current->get_right();
+        }
+    }
+    return nullptr;
+}
+
+void TitleBST::delete_song(const string& artist, const string& title) {
+    TitleBSTNode* target_node = find_node(title);
+
+    if (target_node == nullptr) {
+        throw "Song title not found.";
+    }
+
+    int artist_index = target_node->search(artist);
+
+    if (artist_index == -1) {
+        throw "Artist for the specified song not found.";
+    }
+
+    if (target_node->get_artist().size() == 1) {
+        delete_node(title);
+    } else {
+        target_node->remove_artist(artist);
+    }
+}
+
 void TitleBST::clear(TitleBSTNode* node) {
     if (node == nullptr) {
         return;
