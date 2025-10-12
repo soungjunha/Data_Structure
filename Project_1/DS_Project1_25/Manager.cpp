@@ -8,37 +8,47 @@
 
 using namespace std;
 
+// Constructor: Opens the log file for writing.
 Manager::Manager() {
 	flog.open("log.txt");
 }
 
+// Destructor: Currently empty, but would handle any necessary cleanup.
+// File streams are automatically closed when their objects are destroyed.
 Manager::~Manager() {
 	
 }
 
+// Main execution function. It reads the command file line by line and
+// calls the appropriate handler function for each command.
 void Manager::run(const char* command) {
 	fcmd.open(command);
 
+	// Check if the command file was successfully opened.
 	if (!fcmd.is_open())
 	{
 		cout<<"not found command file"<<endl;
 	}
 	else
 	{
-
 		string line;
+		// Read the command file one line at a time.
 		while (getline(fcmd, line))
 		{
 			string keyword,parameter;
+			// Find the first space to separate the command keyword from its parameters.
 			size_t pos=line.find(' ');
 
 			if (pos != string::npos) {
 				keyword = line.substr(0, pos);
 				parameter = line.substr(pos + 1);
 			} else {
+				// Handle commands with no parameters.
 				keyword = line;
 				parameter = "";
 			}
+			
+			// Call the corresponding function based on the command keyword.
 			if (keyword=="LOAD")
 			{
 				LOAD();
@@ -70,10 +80,11 @@ void Manager::run(const char* command) {
 			else if (keyword=="EXIT")
 			{
 				EXIT();
-				break;
+				break; // Stop processing after EXIT command.
 			}
 			else
 			{
+				// Log an error for any unrecognized command.
 				flog<<"========ERROR========"<<endl;
 				flog<<"1000"<<endl;
 				flog<<"======================"<<endl;
@@ -83,8 +94,10 @@ void Manager::run(const char* command) {
 	}
 }
 
+// Loads music data from "Music_List.txt" into the music queue.
 void Manager::LOAD() {
 	ifstream music_list("Music_List.txt");
+	// Error if the queue is not empty or the music file cannot be opened.
 	if (!q.empty()||!music_list.is_open())
 	{
 		flog<<"========ERROR========"<<endl;
@@ -95,15 +108,18 @@ void Manager::LOAD() {
 	{
 		string line;
 		flog<<"========LOAD========"<<endl;
+		// Read each line from the music file.
 		while (getline(music_list, line))
 		{
 			string token;
 			vector<string> tokens;
 			stringstream ss(line);
 
+			// Split the line by the '|' delimiter.
 			while (getline(ss, token, '|')) {
         		tokens.push_back(token);
     		}
+			// Push the parsed song data into the queue.
 			q.push(tokens[0],tokens[1],tokens[2]);
 			flog<<tokens[0]<<'/'<<tokens[1]<<'/'<<tokens[2]<<endl;
 		}
@@ -112,14 +128,17 @@ void Manager::LOAD() {
 	
 }
 
+// Adds a single song to the music queue.
 void Manager::ADD(const string& parameter) {
 	string token;
 	vector<string> tokens;
 	stringstream ss(parameter);
 
+	// Parse the parameter string by the '|' delimiter.
 	while (getline(ss, token, '|')) {
 		tokens.push_back(token);
 	}
+	// A valid ADD command must have exactly 3 parts: artist, title, runtime.
 	if(tokens.size()!=3){
 		flog<<"========ERROR========"<<endl;
 		flog<<"200"<<endl;
@@ -128,6 +147,7 @@ void Manager::ADD(const string& parameter) {
 	}
 	try
 	{
+		// Push the new song data into the queue.
 		q.push(tokens[0],tokens[1],tokens[2]);
 		flog<<"========ADD========"<<endl;
 		flog<<tokens[0]<<'/'<<tokens[1]<<'/'<<tokens[2]<<endl;
@@ -135,6 +155,7 @@ void Manager::ADD(const string& parameter) {
 	}
 	catch(const char* errorMessage)
 	{
+		// Catch any errors during the push operation (e.g., validation).
 		flog<<"========ERROR========"<<endl;
 		flog<<"200"<<endl;
 		flog<<"======================"<<endl;
@@ -142,7 +163,9 @@ void Manager::ADD(const string& parameter) {
 	
 }
 
+// Moves all songs from the queue into the Artist and Title BSTs.
 void Manager::QPOP() {
+	// Error if the queue is already empty.
 	if (q.empty())
 	{
 		flog<<"========ERROR========"<<endl;
@@ -152,19 +175,23 @@ void Manager::QPOP() {
 	}
 	else
 	{
+		// Loop until the queue is empty.
 		while (!q.empty())
 		{
 			try
 			{
+				// Insert the song at the front of the queue into both BSTs.
 				ab.insert(q.front());
 				tb.insert(q.front());
 			}
 			catch(const char* errorMessage)
 			{
+				// Catch insertion errors (e.g., duplicate songs).
 				flog<<"========ERROR========"<<endl;
 				flog<<"300"<<endl;
 				flog<<"======================"<<endl;
 			}
+			// Remove the song from the queue.
 			q.pop();
 		}
 		flog<<"========QPOP========"<<endl;
@@ -174,27 +201,26 @@ void Manager::QPOP() {
 	
 }
 
+// Searches for songs based on different criteria.
 void Manager::SEARCH(const string& parameter) {
 	try {
 		vector<pair<string,string>>res_vec;
         stringstream ss(parameter);
         string type;
 
-        ss >> type;
+        ss >> type; // Read the search type (ARTIST, TITLE, SONG).
 
         if (type == "ARTIST" || type == "TITLE") {
             string arg;
 			
-            ss >> ws;
-            getline(ss, arg);
+            ss >> ws; // Skip whitespace.
+            getline(ss, arg); // Read the rest of the line as the argument.
 
             if (arg.empty()) {
-                flog << "========ERROR========" << endl;
-				flog << "400" << endl;
-				flog << "======================" << endl;
-                return;
+                throw "400";
             }
 
+			// Call the appropriate search function based on the type.
             if (type == "ARTIST") {
                 res_vec=ab.search(arg);
             }
@@ -202,6 +228,7 @@ void Manager::SEARCH(const string& parameter) {
                 res_vec=tb.search(arg);
             }
 
+			// Log the search results.
 			flog << "========SEARCH========" << endl;
 			for (int i = 0; i < res_vec.size(); i++)
 			{
@@ -222,51 +249,46 @@ void Manager::SEARCH(const string& parameter) {
             string remain;
 
             ss >> ws;
-            getline(ss, remain);
+            getline(ss, remain); // Get the "artist|title" part.
 
             stringstream songStream(remain);
             
+			// Parse the artist and title.
             if (getline(songStream, artist, '|') && getline(songStream, title)) {
                 if (title.empty() || artist.empty()) {
-                    flog << "========ERROR========" << endl;
-					flog << "400" << endl;
-					flog << "======================" << endl;
-                    return;
+                    throw "400";
                 }
-                res_vec=ab.search(artist);
+                res_vec=ab.search(artist); // Search for the artist first.
+				// Then, find the specific song title in the results.
 				auto song = find_if(res_vec.begin(), res_vec.end(), [&](const pair<string, string>& p) {return p.first == title;});
 				
 				if (song != res_vec.end()) {
-				flog << "========SEARCH========" << endl;
-				flog << artist << '/' << title << '/' << (*song).second << endl;
-				flog << "======================" << endl;
+					flog << "========SEARCH========" << endl;
+					flog << artist << '/' << title << '/' << (*song).second << endl;
+					flog << "======================" << endl;
 				} else {
 					throw "Song not found";
 				}
             }
 			else {
-				flog << "========ERROR========" << endl;
-				flog << "400" << endl;
-				flog << "======================" << endl;
-                return;
+				// Handle malformed SONG search parameter.
+				throw "400";
             }
         }
         else {
-            flog << "========ERROR========" << endl;
-			flog << "400" << endl;
-			flog << "======================" << endl;
-            return;
+			// Handle invalid search type.
+            throw "400";
         }
     }
     catch (const char* errorMessage) {
+		// Catch any exceptions during search (e.g., not found).
         flog << "========ERROR========" << endl;
 		flog << "400" << endl;
 		flog << "======================" << endl;
 	}
-	
-
 }
 
+// Adds songs to the playlist.
 void Manager::MAKEPL(const string& parameter) {
 	try
 	{
@@ -274,7 +296,7 @@ void Manager::MAKEPL(const string& parameter) {
         stringstream ss(parameter);
         string type;
 
-        ss >> type;
+        ss >> type; // Read the type (ARTIST, TITLE, SONG).
 
         if (type == "ARTIST" || type == "TITLE") {
             string arg;
@@ -288,8 +310,10 @@ void Manager::MAKEPL(const string& parameter) {
 
             if (type == "ARTIST") {
                 res_vec=ab.search(arg);
+				// Check if there's enough space in the playlist.
 				if (res_vec.size()<(10-pl.get_count()))
 				{
+					// Add all songs by the artist to the playlist.
 					for (const pair<string,string>& music:res_vec)
 					{
 						string min,sec;
@@ -301,14 +325,16 @@ void Manager::MAKEPL(const string& parameter) {
 				}
 				else
 				{
-					throw "500";
+					throw "500"; // Not enough space.
 				}
 				
             }
-			else {
+			else { // TITLE
                 res_vec=tb.search(arg);
+				// Check for space.
 				if (res_vec.size()<(10-pl.get_count()))
 				{
+					// Add all songs with that title to the playlist.
 					for (const pair<string,string>& music:res_vec)
 					{
 						string min,sec;
@@ -323,7 +349,6 @@ void Manager::MAKEPL(const string& parameter) {
 					throw "500";
 				}
             }
-
         }
         else if (type == "SONG") {
             string title, artist;
@@ -338,10 +363,12 @@ void Manager::MAKEPL(const string& parameter) {
                 if (title.empty() || artist.empty()) {
                     throw "500";
                 }
+				// Find the specific song.
                 res_vec=ab.search(artist);
 				auto song = find_if(res_vec.begin(), res_vec.end(), [&](const pair<string, string>& p) {return p.first == title;});
 				
 				if (song != res_vec.end()) {
+					// Add the found song to the playlist.
 					string min,sec;
 					size_t pos=(*song).second.find(':');
 					min = (*song).second.substr(0, pos);
@@ -357,15 +384,17 @@ void Manager::MAKEPL(const string& parameter) {
             }
         }
         else {
-            throw "500";
+            throw "500"; // Invalid type.
         }
 
+		// Print the updated playlist to the log.
 		flog << "========MAKEPL========" << endl;
 		pl.print(flog);
    		flog << "======================" << endl;
 		
 	}
 	catch (const char* errorMessage) {
+		// Catch any errors during the process.
         flog << "========ERROR========" << endl;
 		flog << "500" << endl;
 		flog << "======================" << endl;
@@ -373,6 +402,7 @@ void Manager::MAKEPL(const string& parameter) {
 	
 }
 
+// Prints the content of a specified data structure.
 void Manager::PRINT(const string& parameter) {
 	try
 	{
@@ -393,12 +423,14 @@ void Manager::PRINT(const string& parameter) {
 				flog << "======================" << endl;
 			}
 			else {
+				// Error if trying to print an empty playlist.
 				throw "600";
             }
 			
 		}
 		else
 		{
+			// Error for invalid parameter.
 			throw "600";
 		}
 		
@@ -412,13 +444,14 @@ void Manager::PRINT(const string& parameter) {
 	
 }
 
+// Deletes songs based on various criteria from all relevant data structures.
 void Manager::DELETE(const string& parameter) {
 	try
 	{
         stringstream ss(parameter);
         string type;
 
-        ss >> type;
+        ss >> type; // Get the deletion type.
 
         if (type == "ARTIST" || type == "TITLE") {
             string arg;
@@ -431,12 +464,13 @@ void Manager::DELETE(const string& parameter) {
             }
 
             if (type == "ARTIST") {
-				flog << "\n===========ARTIST===========" << endl;
+				// Delete the artist from all data structures.
 				tb.delete_artist(arg);
 				ab.delete_node(arg);
 				pl.delete_node(arg);
             }
-			else {
+			else { // TITLE
+                // Delete all occurrences of the title from all data structures.
                 tb.delete_node(arg);
 				ab.delete_title(arg);
 				pl.delete_node(arg);
@@ -456,6 +490,7 @@ void Manager::DELETE(const string& parameter) {
                 if (title.empty() || artist.empty()) {
                     throw "700";
                 }
+				// Delete a specific song from all data structures.
                 tb.delete_song(artist,title);
 				ab.delete_song(artist,title);
 				pl.delete_node(false,artist,title);
@@ -477,6 +512,7 @@ void Manager::DELETE(const string& parameter) {
                 if (title.empty() || artist.empty()) {
                     throw "700";
                 }
+				// Delete a specific song only from the playlist.
                 pl.delete_node(true,artist,title);
             }
 			else {
@@ -484,7 +520,7 @@ void Manager::DELETE(const string& parameter) {
             }
         }
         else {
-            throw "700";
+            throw "700"; // Invalid type.
         }
 
 		flog << "========DELETE========" << endl;
@@ -493,12 +529,14 @@ void Manager::DELETE(const string& parameter) {
 		
 	}
 	catch (const char* errorMessage) {
+		// Catch any errors during deletion.
         flog << "========ERROR========" << endl;
 		flog << "700" << endl;
 		flog << "======================" << endl;
 	}
 }
 
+// Handles the EXIT command, closing files and terminating the program.
 void Manager::EXIT() {
 	flog<<"========EXIT========"<<endl;
 	flog<<"Success"<<endl;
