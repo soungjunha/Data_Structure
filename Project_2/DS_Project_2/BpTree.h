@@ -6,22 +6,26 @@
 #include "BpTreeIndexNode.h"
 #include "EmployeeData.h"
 #include "SelectionTree.h"
+#include <fstream> // Need this for ofstream
 
 class BpTree {
 private:
 	BpTreeNode* root;
 	int	order;		// m children
+	std::ofstream* fout; // For printing (e.g., in searchRange)
 
 public:
-	BpTree(ofstream *fout, int order = 3) {
-		
+	BpTree(std::ofstream *fout, int order = 3) {
+		// Initialize member variables
+		this->root = nullptr;
+		this->order = order;
+		this->fout = fout;
 	}
 	
 	~BpTree() {
 
 	}
 
-	/* essential */
 	bool		Insert(EmployeeData* newData);
 	bool		excessDataNode(BpTreeNode* pDataNode);
 	bool		excessIndexNode(BpTreeNode* pIndexNode);
