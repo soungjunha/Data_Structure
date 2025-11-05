@@ -10,10 +10,13 @@ private:
 
 public:
     EmployeeHeap() {
-        
+        this->datanum = 0;
+        this->heapArr = new EmployeeData*[this->maxCapacity];
+        this->heapArr[0] = nullptr;
     }
+
     ~EmployeeHeap() {
-        
+        delete[] heapArr;
     }
     
     void Insert(EmployeeData* data);
