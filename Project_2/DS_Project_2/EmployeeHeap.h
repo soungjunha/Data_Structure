@@ -12,9 +12,8 @@ public:
     EmployeeHeap() {
         this->datanum = 0;
         this->heapArr = new EmployeeData*[this->maxCapacity];
-        this->heapArr[0] = nullptr;
+        this->heapArr[0] = nullptr; 
     }
-
     ~EmployeeHeap() {
         delete[] heapArr;
     }
@@ -28,4 +27,7 @@ public:
     void UpHeap(int index);
     void DownHeap(int index);
     void ResizeArray();
+
+    EmployeeData** getHeapArray() { return heapArr; }
+    int getDataNum() { return datanum; }
 };
