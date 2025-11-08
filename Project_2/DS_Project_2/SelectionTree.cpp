@@ -106,10 +106,11 @@ bool SelectionTree::printEmployeeData(int dept_no) {
         sortedList.push_back(heapArr[i]);
     }
 
-    // 2. vector를 "이름(name) 기준" 오름차순으로 정렬 (람다 함수 사용)
+    // 2. vector를 "연봉(income) 기준" 내림차순으로 정렬
     std::sort(sortedList.begin(), sortedList.end(), 
         [](EmployeeData* a, EmployeeData* b) {
-            return a->getName() < b->getName();
+            // 연봉이 높은 순서 (내림차순)
+            return a->getIncome() > b->getIncome();
         }
     );
 
