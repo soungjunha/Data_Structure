@@ -16,7 +16,7 @@ bool BpTree::Insert(EmployeeData* newData) {
     BpTreeNode* pLeaf = searchDataNode(name);
     map<string, EmployeeData*>* dataMap = pLeaf->getDataMap();
 
-    // Case 2: Key already exists. Update the salary. [cite: 32]
+    // Case 2: Key already exists. Update the salary.
     auto it = dataMap->find(name);
     if (it != dataMap->end()) {
         // 2. setter/getter 함수 사용

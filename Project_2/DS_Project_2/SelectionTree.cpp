@@ -52,7 +52,7 @@ bool SelectionTree::Insert(EmployeeData* newData) {
     // 3. 힙의 새로운 승자(Top)를 리프 노드의 데이터로 설정
     leaf->setEmployeeData(heap->Top());
 
-    // 4. 변경 사항을 루트까지 전파(업데이트) (명세서 요구사항) [cite: 68, 80]
+    // 4. 변경 사항을 루트까지 전파(업데이트) (명세서 요구사항)
     updateTree(leaf);
     
     return true;
@@ -79,7 +79,7 @@ bool SelectionTree::Delete() {
     // 4. 힙의 *새로운* 승자(Top)를 리프 노드의 데이터로 설정
     leaf->setEmployeeData(heap->Top());
 
-    // 5. 변경 사항을 루트까지 전파(업데이트) [cite: 80, 107]
+    // 5. 변경 사항을 루트까지 전파(업데이트)
     updateTree(leaf);
 
     return true;
@@ -95,6 +95,9 @@ bool SelectionTree::printEmployeeData(int dept_no) {
     if (heap == nullptr || heap->IsEmpty()) {
         return false; // 힙이 없거나 비어있음 (Error 600)
     }
+
+    // 헤더 출력
+    *fout << "========PRINT_ST========\n";
 
     // EmployeeHeap.h에 추가한 getter 함수들 사용
     EmployeeData** heapArr = heap->getHeapArray(); 
@@ -119,6 +122,9 @@ bool SelectionTree::printEmployeeData(int dept_no) {
         *fout << data->getName() << "/" << data->getDeptNo() << "/"
               << data->getID() << "/" << data->getIncome() << std::endl;
     }
+
+    // 푸터 출력
+    *fout << "========================\n\n";
 
     return true;
 }
