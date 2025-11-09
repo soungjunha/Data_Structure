@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+using namespace std;
+
 // Main function to read and execute commands from the command file
 // Reads commands line by line and executes each command
 // Commands must be in uppercase
@@ -16,21 +18,21 @@ void Manager::run(const char* command) {
         return;
     }
 
-    std::string line;
+    string line;
     // Read command file line by line
-    while (std::getline(fin, line)) {
-        std::stringstream ss(line);
-        std::string cmdName;
-        ss >> cmdName; // Get the command name
+    while (getline(fin, line)) {
+        stringstream ss(line);
+        string cmd_name;
+        ss >> cmd_name; // Get the command name
 
-        if (cmdName == "LOAD") {
+        if (cmd_name == "LOAD") {
             // Check for extra arguments
-            std::string extra;
+            string extra;
             if (ss >> extra) printErrorCode(100);
             else LOAD();
         } 
-        else if (cmdName == "ADD_BP") {
-            std::string name, dept_s, id_s, income_s, extra;
+        else if (cmd_name == "ADD_BP") {
+            string name, dept_s, id_s, income_s, extra;
             // Check for too few arguments (4 args needed)
             if (!(ss >> name >> dept_s >> id_s >> income_s)) {
                 printErrorCode(200);
@@ -41,11 +43,11 @@ void Manager::run(const char* command) {
             } 
             else {
                 // Call helper with parsed arguments
-                ADD_BP(name, std::stoi(dept_s), std::stoi(id_s), std::stoi(income_s));
+                ADD_BP(name, stoi(dept_s), stoi(id_s), stoi(income_s));
             }
         } 
-        else if (cmdName == "SEARCH_BP") {
-            std::string arg1, arg2, extra;
+        else if (cmd_name == "SEARCH_BP") {
+            string arg1, arg2, extra;
             if (!(ss >> arg1)) {
                 printErrorCode(300); // Too few args
             } 
@@ -57,13 +59,13 @@ void Manager::run(const char* command) {
                 SEARCH_BP_NAME(arg1);
             }
         } 
-        else if (cmdName == "PRINT_BP") {
-            std::string extra;
+        else if (cmd_name == "PRINT_BP") {
+            string extra;
             if (ss >> extra) printErrorCode(400);
             else PRINT_BP();
         } 
-        else if (cmdName == "ADD_ST") {
-            std::string type, value, extra;
+        else if (cmd_name == "ADD_ST") {
+            string type, value, extra;
             if (!(ss >> type >> value)) {
                 printErrorCode(500); // Too few args
             } 
@@ -74,14 +76,14 @@ void Manager::run(const char* command) {
                 ADD_ST_NAME(value);
             } 
             else if (type == "dept_no") {
-                ADD_ST_DEPTNO(std::stoi(value));
+                ADD_ST_DEPTNO(stoi(value));
             } 
             else {
                 printErrorCode(500); // Unknown argument type
             }
         } 
-        else if (cmdName == "PRINT_ST") {
-            std::string dept_s, extra;
+        else if (cmd_name == "PRINT_ST") {
+            string dept_s, extra;
             if (!(ss >> dept_s)) {
                 printErrorCode(600); // Too few args
             } 
@@ -89,15 +91,15 @@ void Manager::run(const char* command) {
                 printErrorCode(600); // Too many args
             } 
             else {
-                PRINT_ST(std::stoi(dept_s));
+                PRINT_ST(stoi(dept_s));
             }
         } 
-        else if (cmdName == "DELETE") {
-            std::string extra;
+        else if (cmd_name == "DELETE") {
+            string extra;
             if (ss >> extra) printErrorCode(700);
             else DELETE();
         } 
-        else if (cmdName == "EXIT") {
+        else if (cmd_name == "EXIT") {
             printSuccessCode("EXIT");
             break; // Exit loop and terminate program
         } 
@@ -118,30 +120,30 @@ void Manager::LOAD() {
         return;
     }
 
-    std::ifstream empFile("employee.txt");
-    if (!empFile.is_open()) {
+    ifstream emp_file("employee.txt");
+    if (!emp_file.is_open()) {
         printErrorCode(100); // File does not exist
         return;
     }
 
-    std::string line;
-    while (std::getline(empFile, line)) {
-        std::stringstream ss(line);
-        std::string name, dept_s, id_s, income_s;
+    string line;
+    while (getline(emp_file, line)) {
+        stringstream ss(line);
+        string name, dept_s, id_s, income_s;
 
         // Parse data separated by tabs
-        std::getline(ss, name, '\t');
-        std::getline(ss, dept_s, '\t');
-        std::getline(ss, id_s, '\t');
-        std::getline(ss, income_s, '\t');
+        getline(ss, name, '\t');
+        getline(ss, dept_s, '\t');
+        getline(ss, id_s, '\t');
+        getline(ss, income_s, '\t');
 
-        EmployeeData* newData = new EmployeeData();
-        newData->setData(name, std::stoi(dept_s), std::stoi(id_s), std::stoi(income_s));
+        EmployeeData* new_data = new EmployeeData();
+        new_data->setData(name, stoi(dept_s), stoi(id_s), stoi(income_s));
 
-        bptree->Insert(newData); // Insert into B+ Tree
+        bptree->Insert(new_data); // Insert into B+ Tree
     }
 
-    empFile.close();
+    emp_file.close();
     printSuccessCode("LOAD");
 }
 
@@ -149,10 +151,10 @@ void Manager::LOAD() {
 // If employee does not exist in B+ Tree, creates new node
 // If employee already exists, only updates the salary
 void Manager::ADD_BP(string name, int dept_no, int id, int income) {
-    EmployeeData* newData = new EmployeeData();
-    newData->setData(name, dept_no, id, income);
+    EmployeeData* new_data = new EmployeeData();
+    new_data->setData(name, dept_no, id, income);
 
-    bptree->Insert(newData); // Insert or update
+    bptree->Insert(new_data); // Insert or update
 
     flog << "========ADD_BP========\n";
     flog << name << "/" << dept_no << "/" << id << "/" << income << "\n";
@@ -170,10 +172,10 @@ void Manager::SEARCH_BP_NAME(string name) {
         return;
     }
     
-    auto* dataMap = leaf->getDataMap();
-    auto it = dataMap->find(name);
+    map<string, EmployeeData*>* data_map = leaf->getDataMap();
+    map<string, EmployeeData*>::iterator it = data_map->find(name);
     
-    if (it == dataMap->end()) {
+    if (it == data_map->end()) {
         printErrorCode(300); // Name not found
     } else {
         flog << "========SEARCH_BP========\n";
@@ -209,22 +211,22 @@ void Manager::PRINT_BP() {
 
     flog << "========PRINT_BP========\n";
     // Find the left-most leaf node to start
-    BpTreeNode* pCur = bptree->getRoot();
-    while (pCur->getDataMap() == NULL) {
-        pCur = pCur->getMostLeftChild();
+    BpTreeNode* p_cur = bptree->getRoot();
+    while (p_cur->getDataMap() == NULL) {
+        p_cur = p_cur->getMostLeftChild();
     }
     
     // Iterate through all leaf nodes using the linked list
-    BpTreeDataNode* pLeaf = static_cast<BpTreeDataNode*>(pCur);
-    while (pLeaf != NULL) {
+    BpTreeDataNode* p_leaf = static_cast<BpTreeDataNode*>(p_cur);
+    while (p_leaf != NULL) {
         // Iterate through the map (which is sorted by name)
-        map<string, EmployeeData*>* dataMap = pLeaf->getDataMap();
-        for (map<string, EmployeeData*>::iterator it = dataMap->begin(); it != dataMap->end(); ++it) {
+        map<string, EmployeeData*>* data_map = p_leaf->getDataMap();
+        for (map<string, EmployeeData*>::iterator it = data_map->begin(); it != data_map->end(); ++it) {
             EmployeeData* data = it->second;
             flog << data->getName() << "/" << data->getDeptNo() << "/"
                  << data->getID() << "/" << data->getIncome() << "\n";
         }
-        pLeaf = static_cast<BpTreeDataNode*>(pLeaf->getNext());
+        p_leaf = static_cast<BpTreeDataNode*>(p_leaf->getNext());
     }
     
     flog << "========================\n\n";
@@ -241,31 +243,31 @@ void Manager::ADD_ST_DEPTNO(int dept_no) {
     }
 
     // Find the left-most leaf node
-    BpTreeNode* pCur = bptree->getRoot();
-    while (pCur->getDataMap() == NULL) {
-        pCur = pCur->getMostLeftChild();
+    BpTreeNode* p_cur = bptree->getRoot();
+    while (p_cur->getDataMap() == NULL) {
+        p_cur = p_cur->getMostLeftChild();
     }
     
-    BpTreeDataNode* pLeaf = static_cast<BpTreeDataNode*>(pCur);
+    BpTreeDataNode* p_leaf = static_cast<BpTreeDataNode*>(p_cur);
     bool found = false;
 
     // Iterate through all data nodes (leaves)
-    while (pLeaf != NULL) {
+    while (p_leaf != NULL) {
         
         // C++11 compatible map iteration
-        map<string, EmployeeData*>* dataMap = pLeaf->getDataMap();
-        for (auto it = dataMap->begin(); it != dataMap->end(); ++it) {
+        map<string, EmployeeData*>* data_map = p_leaf->getDataMap();
+        for (map<string, EmployeeData*>::iterator it = data_map->begin(); it != data_map->end(); ++it) {
             EmployeeData* data = it->second;
 
             if (data->getDeptNo() == dept_no) {
                 // IMPORTANT: Create a COPY for the Selection Tree
-                EmployeeData* newData = new EmployeeData();
-                newData->setData(data->getName(), data->getDeptNo(), data->getID(), data->getIncome());
-                stree->Insert(newData); // Insert copy into heap
+                EmployeeData* new_data = new EmployeeData();
+                new_data->setData(data->getName(), data->getDeptNo(), data->getID(), data->getIncome());
+                stree->Insert(new_data); // Insert copy into heap
                 found = true;
             }
         }
-        pLeaf = static_cast<BpTreeDataNode*>(pLeaf->getNext());
+        p_leaf = static_cast<BpTreeDataNode*>(p_leaf->getNext());
     }
 
     if (!found) {
@@ -286,18 +288,18 @@ void Manager::ADD_ST_NAME(string name) {
 
     // Find the leaf and the specific data
     BpTreeNode* leaf = bptree->searchDataNode(name);
-    auto* dataMap = leaf->getDataMap();
-    auto it = dataMap->find(name);
+    map<string, EmployeeData*>* data_map = leaf->getDataMap();
+    map<string, EmployeeData*>::iterator it = data_map->find(name);
     
-    if (it == dataMap->end()) {
+    if (it == data_map->end()) {
         printErrorCode(500); // Name not found
     } else {
         EmployeeData* data = it->second;
         
         // IMPORTANT: Create a COPY for the Selection Tree
-        EmployeeData* newData = new EmployeeData();
-        newData->setData(data->getName(), data->getDeptNo(), data->getID(), data->getIncome());
-        stree->Insert(newData); // Insert copy into heap
+        EmployeeData* new_data = new EmployeeData();
+        new_data->setData(data->getName(), data->getDeptNo(), data->getID(), data->getIncome());
+        stree->Insert(new_data); // Insert copy into heap
 
         printSuccessCode("ADD_ST");
     }

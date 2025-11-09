@@ -18,9 +18,9 @@ private:
 public:
 	// Constructor: initializes B+ Tree and Selection Tree
 	// Opens log file (truncated if already exists)
-	Manager(int bpOrder) {
-		flog.open("log.txt", std::ios::trunc); 
-		bptree = new BpTree(&flog, bpOrder);
+	Manager(int bp_order) {
+		flog.open("log.txt", ios::trunc); 
+		bptree = new BpTree(&flog, bp_order);
 		stree = new SelectionTree(&flog);
 	}
 

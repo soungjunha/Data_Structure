@@ -2,27 +2,29 @@
 
 #include "EmployeeData.h"
 
+using namespace std;
+
 // Max heap class for managing employees sorted by income
 // Implemented using a pointer array (not linked list)
 // Index 0 is unused, for node at index n, children are at 2n and 2n+1
 class EmployeeHeap {
 private:
-    int datanum;                  // Current number of elements in the heap
-    EmployeeData** heapArr;       // Pointer array for heap implementation
-    int maxCapacity = 10;         // Maximum capacity of the heap array
+    int data_num;                 // Current number of elements in the heap
+    EmployeeData** heap_arr;      // Pointer array for heap implementation
+    int max_capacity = 10;        // Maximum capacity of the heap array
 
 public:
     // Constructor: initializes empty heap with capacity 10
     // Index 0 is set to nullptr and not used
     EmployeeHeap() {
-        this->datanum = 0;
-        this->heapArr = new EmployeeData*[this->maxCapacity];
-        this->heapArr[0] = NULL; 
+        this->data_num = 0;
+        this->heap_arr = new EmployeeData*[this->max_capacity];
+        this->heap_arr[0] = NULL; 
     }
 
     // Destructor
     ~EmployeeHeap() {
-        delete[] heapArr;
+        delete[] heap_arr;
     }
     
     // Insert employee data into the max heap
@@ -47,8 +49,8 @@ public:
     void ResizeArray();
 
     // Get the heap array pointer
-    EmployeeData** getHeapArray() { return heapArr; }
+    EmployeeData** getHeapArray() { return heap_arr; }
 
     // Get the current number of elements in the heap
-    int getDataNum() { return datanum; }
+    int getDataNum() { return data_num; }
 };

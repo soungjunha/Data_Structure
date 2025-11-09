@@ -2,6 +2,8 @@
 #include "SelectionTreeNode.h"
 #include <fstream>
 
+using namespace std;
+
 // Selection Tree class for managing employee salary rankings
 // Implements a Max Winner Tree structure based on employee income
 // Has 8 runs (leaf nodes) corresponding to 8 department codes (100~800)
@@ -22,7 +24,7 @@ private:
 public:
     // Constructor: creates 8 leaf nodes with heaps and builds tree structure
     // Number of runs equals the number of department codes
-    SelectionTree(std::ofstream* fout) {
+    SelectionTree(ofstream* fout) {
         this->fout = fout;
         this->root = NULL;
 
@@ -46,7 +48,7 @@ public:
     }
 
     // Set the root node of the Selection Tree
-    void setRoot(SelectionTreeNode* pN) { this->root = pN; }
+    void setRoot(SelectionTreeNode* p_n) { this->root = p_n; }
 
     // Get the root node of the Selection Tree
     SelectionTreeNode* getRoot() { return root; }
@@ -55,7 +57,7 @@ public:
     void setTree();
 
     // Insert employee data into the Selection Tree
-    bool Insert(EmployeeData* newData);
+    bool Insert(EmployeeData* new_data);
 
     // Delete the employee with the highest salary from the Selection Tree
     bool Delete();

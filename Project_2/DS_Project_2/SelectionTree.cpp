@@ -3,46 +3,48 @@
 #include <algorithm>
 #include <string>
 
+using namespace std;
+
 // Build the Selection Tree structure from leaf nodes (runs)
 // Constructs the tree by creating parent nodes level by level
 // Tree is implemented using pointers (not arrays)
 void SelectionTree::setTree() {
-    std::vector<SelectionTreeNode*> currentLevel;
+    vector<SelectionTreeNode*> current_level;
     
     // Level 0: 8 leaf nodes (each node owns a heap)
     for (int i = 0; i < 8; i++) {
-        currentLevel.push_back(run[i]);
+        current_level.push_back(run[i]);
     }
 
     // Build tree from Level 0 -> Level 1 -> ... -> Root
-    while (currentLevel.size() > 1) {
-        std::vector<SelectionTreeNode*> parentLevel;
+    while (current_level.size() > 1) {
+        vector<SelectionTreeNode*> parent_level;
         
         // Pair nodes to create parent nodes
-        for (size_t i = 0; i < currentLevel.size(); i += 2) {
+        for (size_t i = 0; i < current_level.size(); i += 2) {
             SelectionTreeNode* parent = new SelectionTreeNode();
-            SelectionTreeNode* leftChild = currentLevel[i];
-            SelectionTreeNode* rightChild = currentLevel[i + 1];
+            SelectionTreeNode* left_child = current_level[i];
+            SelectionTreeNode* right_child = current_level[i + 1];
 
-            parent->setLeftChild(leftChild);
-            parent->setRightChild(rightChild);
-            leftChild->setParent(parent);
-            rightChild->setParent(parent);
+            parent->setLeftChild(left_child);
+            parent->setRightChild(right_child);
+            left_child->setParent(parent);
+            right_child->setParent(parent);
 
-            parentLevel.push_back(parent);
+            parent_level.push_back(parent);
         }
-        currentLevel = parentLevel;
+        current_level = parent_level;
     }
 
     // The last remaining node is the root
-    this->setRoot(currentLevel[0]);
+    this->setRoot(current_level[0]);
 }
 
 // Insert employee data into the Selection Tree
 // Data is inserted into the appropriate heap based on department code
 // Heap is reorganized after insertion and changes propagate up to root
-bool SelectionTree::Insert(EmployeeData* newData) {
-    int dept = newData->getDeptNo();
+bool SelectionTree::Insert(EmployeeData* new_data) {
+    int dept = new_data->getDeptNo();
     int index = getRunIndex(dept);
 
     if (index < 0 || index > 7) {
@@ -54,7 +56,7 @@ bool SelectionTree::Insert(EmployeeData* newData) {
     EmployeeHeap* heap = leaf->getHeap();
 
     // Insert data into the heap (Max Heap based on income)
-    heap->Insert(newData);
+    heap->Insert(new_data);
 
     // Set the heap's new winner (Top) as the leaf node's data
     leaf->setEmployeeData(heap->Top());
@@ -113,17 +115,17 @@ bool SelectionTree::printEmployeeData(int dept_no) {
     *fout << "========PRINT_ST========\n";
 
     // Use getter functions from EmployeeHeap
-    EmployeeData** heapArr = heap->getHeapArray(); 
+    EmployeeData** heap_arr = heap->getHeapArray(); 
     int count = heap->getDataNum();               
 
     // Copy all heap data to a temporary vector (heap index starts from 1)
-    std::vector<EmployeeData*> sortedList;
+    vector<EmployeeData*> sorted_list;
     for (int i = 1; i <= count; i++) {
-        sortedList.push_back(heapArr[i]);
+        sorted_list.push_back(heap_arr[i]);
     }
 
     // Sort the vector by income in descending order
-    std::sort(sortedList.begin(), sortedList.end(), 
+    sort(sorted_list.begin(), sorted_list.end(), 
         [](EmployeeData* a, EmployeeData* b) {
             // Higher income first (descending order)
             return a->getIncome() > b->getIncome();
@@ -131,9 +133,10 @@ bool SelectionTree::printEmployeeData(int dept_no) {
     );
 
     // Print the sorted list in the required format
-    for (EmployeeData* data : sortedList) {
+    for (vector<EmployeeData*>::iterator it = sorted_list.begin(); it != sorted_list.end(); ++it) {
+        EmployeeData* data = *it;
         *fout << data->getName() << "/" << data->getDeptNo() << "/"
-              << data->getID() << "/" << data->getIncome() << std::endl;
+              << data->getID() << "/" << data->getIncome() << endl;
     }
 
     // Print footer
@@ -154,30 +157,30 @@ void SelectionTree::updateTree(SelectionTreeNode* node) {
         SelectionTreeNode* left = parent->getLeftChild();
         SelectionTreeNode* right = parent->getRightChild();
 
-        EmployeeData* leftWinner = left->getEmployeeData();
-        EmployeeData* rightWinner = right->getEmployeeData();
-        EmployeeData* newParentWinner = NULL;
+        EmployeeData* left_winner = left->getEmployeeData();
+        EmployeeData* right_winner = right->getEmployeeData();
+        EmployeeData* new_parent_winner = NULL;
 
         // Max Winner Tree: Select the child with higher income
-        if (leftWinner == NULL && rightWinner == NULL) {
-            newParentWinner = NULL;
-        } else if (leftWinner == NULL) {
-            newParentWinner = rightWinner;
-        } else if (rightWinner == NULL) {
-            newParentWinner = leftWinner;
-        } else if (leftWinner->getIncome() > rightWinner->getIncome()) {
-            newParentWinner = leftWinner;
+        if (left_winner == NULL && right_winner == NULL) {
+            new_parent_winner = NULL;
+        } else if (left_winner == NULL) {
+            new_parent_winner = right_winner;
+        } else if (right_winner == NULL) {
+            new_parent_winner = left_winner;
+        } else if (left_winner->getIncome() > right_winner->getIncome()) {
+            new_parent_winner = left_winner;
         } else {
-            newParentWinner = rightWinner;
+            new_parent_winner = right_winner;
         }
 
         // Check if the parent's winner has changed (if not, stop)
-        if (parent->getEmployeeData() == newParentWinner) {
+        if (parent->getEmployeeData() == new_parent_winner) {
             break;
         }
 
         // Update the parent's winner and move to the next level
-        parent->setEmployeeData(newParentWinner);
+        parent->setEmployeeData(new_parent_winner);
         current = parent;
     }
 }

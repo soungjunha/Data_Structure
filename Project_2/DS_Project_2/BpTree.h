@@ -8,6 +8,8 @@
 #include "SelectionTree.h"
 #include <fstream>
 
+using namespace std;
+
 // B+ Tree class for managing employee data sorted by name
 // Employee data is stored in data nodes (leaves) and sorted by name in ascending order
 // Index nodes contain keys and pointers to navigate the tree
@@ -15,11 +17,11 @@ class BpTree {
 private:
 	BpTreeNode* root;      // Root node of the B+ tree
 	int	order;             // Order of the B+ tree (m children)
-	std::ofstream* fout;   // Output file stream for printing results
+	ofstream* fout;        // Output file stream for printing results
 
 public:
 	// Constructor: initializes B+ tree with given order (default 3)
-	BpTree(std::ofstream *fout, int order = 3) {
+	BpTree(ofstream *fout, int order = 3) {
 		this->root = NULL;
 		this->order = order;
 		this->fout = fout;
@@ -31,19 +33,19 @@ public:
 	}
 
 	// Insert employee data into the B+ tree
-	bool Insert(EmployeeData* newData);
+	bool Insert(EmployeeData* new_data);
 
 	// Check if a data node has exceeded its capacity
-	bool excessDataNode(BpTreeNode* pDataNode);
+	bool excessDataNode(BpTreeNode* p_data_node);
 
 	// Check if an index node has exceeded its capacity
-	bool excessIndexNode(BpTreeNode* pIndexNode);
+	bool excessIndexNode(BpTreeNode* p_index_node);
 
 	// Split a data node that has overflowed
-	void splitDataNode(BpTreeNode* pDataNode);
+	void splitDataNode(BpTreeNode* p_data_node);
 
 	// Split an index node that has overflowed
-	void splitIndexNode(BpTreeNode* pIndexNode);
+	void splitIndexNode(BpTreeNode* p_index_node);
 
 	// Get the root node of the B+ tree
 	BpTreeNode* getRoot() { return root; }
