@@ -3,18 +3,22 @@
 #include <algorithm>
 #include <string>
 
+// Build the Selection Tree structure from leaf nodes (runs)
+// Constructs the tree by creating parent nodes level by level
+// Tree is implemented using pointers (not arrays)
 void SelectionTree::setTree() {
     std::vector<SelectionTreeNode*> currentLevel;
-    // 1. 레벨 0: 8개의 리프 노드 (각 노드는 힙을 소유함)
+    
+    // Level 0: 8 leaf nodes (each node owns a heap)
     for (int i = 0; i < 8; i++) {
         currentLevel.push_back(run[i]);
     }
 
-    // 2. 레벨 0 -> 레벨 1 -> ... -> 루트 까지 구축
+    // Build tree from Level 0 -> Level 1 -> ... -> Root
     while (currentLevel.size() > 1) {
         std::vector<SelectionTreeNode*> parentLevel;
         
-        // 3. 두 개씩 짝지어 부모 노드 생성
+        // Pair nodes to create parent nodes
         for (size_t i = 0; i < currentLevel.size(); i += 2) {
             SelectionTreeNode* parent = new SelectionTreeNode();
             SelectionTreeNode* leftChild = currentLevel[i];
@@ -30,125 +34,136 @@ void SelectionTree::setTree() {
         currentLevel = parentLevel;
     }
 
-    // 5. 마지막 남은 노드가 루트
+    // The last remaining node is the root
     this->setRoot(currentLevel[0]);
 }
 
+// Insert employee data into the Selection Tree
+// Data is inserted into the appropriate heap based on department code
+// Heap is reorganized after insertion and changes propagate up to root
 bool SelectionTree::Insert(EmployeeData* newData) {
     int dept = newData->getDeptNo();
     int index = getRunIndex(dept);
 
     if (index < 0 || index > 7) {
-        return false; // (Error 500)
+        return false; // Invalid department code (Error 500)
     }
 
-    // 1. 해당 부서의 리프 노드 및 힙에 접근
+    // Access the leaf node and heap for this department
     SelectionTreeNode* leaf = run[index];
     EmployeeHeap* heap = leaf->getHeap();
 
-    // 2. 힙에 데이터 삽입 (연봉 기준 Max Heap)
+    // Insert data into the heap (Max Heap based on income)
     heap->Insert(newData);
 
-    // 3. 힙의 새로운 승자(Top)를 리프 노드의 데이터로 설정
+    // Set the heap's new winner (Top) as the leaf node's data
     leaf->setEmployeeData(heap->Top());
 
-    // 4. 변경 사항을 루트까지 전파(업데이트) (명세서 요구사항)
+    // Propagate changes up to the root (as required by specifications)
     updateTree(leaf);
     
     return true;
 }
 
+// Delete the employee with the highest salary from the Selection Tree
+// Removes the employee stored in the root node (highest income)
+// After deletion, heap is reorganized and changes propagate up to root
 bool SelectionTree::Delete() {
     EmployeeData* winner = root->getEmployeeData();
 
-    // 1. 트리가 비어있는 경우 (Error 700)
-    if (winner == nullptr) {
+    // Tree is empty (Error 700)
+    if (winner == NULL) {
         return false;
     }
 
-    // 2. 최고 연봉자의 부서(dept)를 찾아 해당 힙에 접근
+    // Find the department and access the corresponding heap
     int dept = winner->getDeptNo();
     int index = getRunIndex(dept);
 
     SelectionTreeNode* leaf = run[index];
     EmployeeHeap* heap = leaf->getHeap();
 
-    // 3. 해당 힙에서 루트(최고 연봉자)를 삭제 (연봉 기준)
+    // Delete the root (highest income employee) from the heap
     heap->Delete();
 
-    // 4. 힙의 *새로운* 승자(Top)를 리프 노드의 데이터로 설정
+    // Set the heap's new winner (Top) as the leaf node's data
     leaf->setEmployeeData(heap->Top());
 
-    // 5. 변경 사항을 루트까지 전파(업데이트)
+    // Propagate changes up to the root
     updateTree(leaf);
 
     return true;
 }
 
+// Print all employees from a specific department's heap
+// Prints employees sorted by income in descending order
+// Returns false if department code is invalid or heap is empty
 bool SelectionTree::printEmployeeData(int dept_no) {
     int index = getRunIndex(dept_no);
     if (index < 0 || index > 7) {
-        return false; // 잘못된 부서 (Error 600)
+        return false; // Invalid department (Error 600)
     }
 
     EmployeeHeap* heap = run[index]->getHeap();
-    if (heap == nullptr || heap->IsEmpty()) {
-        return false; // 힙이 없거나 비어있음 (Error 600)
+    if (heap == NULL || heap->IsEmpty()) {
+        return false; // Heap does not exist or is empty (Error 600)
     }
 
-    // 헤더 출력
+    // Print header
     *fout << "========PRINT_ST========\n";
 
-    // EmployeeHeap.h에 추가한 getter 함수들 사용
+    // Use getter functions from EmployeeHeap
     EmployeeData** heapArr = heap->getHeapArray(); 
     int count = heap->getDataNum();               
 
-    // 1. 힙의 모든 데이터를 임시 vector로 복사 (힙 인덱스 1부터 시작)
+    // Copy all heap data to a temporary vector (heap index starts from 1)
     std::vector<EmployeeData*> sortedList;
     for (int i = 1; i <= count; i++) {
         sortedList.push_back(heapArr[i]);
     }
 
-    // 2. vector를 "연봉(income) 기준" 내림차순으로 정렬
+    // Sort the vector by income in descending order
     std::sort(sortedList.begin(), sortedList.end(), 
         [](EmployeeData* a, EmployeeData* b) {
-            // 연봉이 높은 순서 (내림차순)
+            // Higher income first (descending order)
             return a->getIncome() > b->getIncome();
         }
     );
 
-    // 3. 정렬된 리스트를 포맷에 맞게 출력
+    // Print the sorted list in the required format
     for (EmployeeData* data : sortedList) {
         *fout << data->getName() << "/" << data->getDeptNo() << "/"
               << data->getID() << "/" << data->getIncome() << std::endl;
     }
 
-    // 푸터 출력
+    // Print footer
     *fout << "========================\n\n";
 
     return true;
 }
 
-
+// Update the Selection Tree from a leaf node up to the root
+// Propagates changes by comparing incomes of left and right children
+// Selects the winner (employee with higher income) for Max Winner Tree
 void SelectionTree::updateTree(SelectionTreeNode* node) {
     SelectionTreeNode* current = node;
 
-    // 루트에 도달할 때까지 반복
-    while (current != root && current->getParent() != nullptr) {
+    // Repeat until reaching the root
+    while (current != root && current->getParent() != NULL) {
         SelectionTreeNode* parent = current->getParent();
         SelectionTreeNode* left = parent->getLeftChild();
         SelectionTreeNode* right = parent->getRightChild();
 
         EmployeeData* leftWinner = left->getEmployeeData();
         EmployeeData* rightWinner = right->getEmployeeData();
-        EmployeeData* newParentWinner = nullptr;
+        EmployeeData* newParentWinner = NULL;
 
-        // 1. Max Winner Tree: 두 자식 중 연봉(Income)이 더 높은 쪽을 선택
-        if (leftWinner == nullptr && rightWinner == nullptr) {
-            newParentWinner = nullptr;
-        } else if (leftWinner == nullptr) {
+        // Max Winner Tree: Select the child with higher income
+        if (leftWinner == NULL && rightWinner == NULL) {
+            newParentWinner = NULL;
+        } else if (leftWinner == NULL) {
             newParentWinner = rightWinner;
-        } else if (rightWinner == nullptr) {
+        } else if (rightWinner == NULL) {
             newParentWinner = leftWinner;
         } else if (leftWinner->getIncome() > rightWinner->getIncome()) {
             newParentWinner = leftWinner;
@@ -156,12 +171,12 @@ void SelectionTree::updateTree(SelectionTreeNode* node) {
             newParentWinner = rightWinner;
         }
 
-        // 2. 부모의 Winner가 바뀌었는지 확인 (안바뀌었으면 종료)
+        // Check if the parent's winner has changed (if not, stop)
         if (parent->getEmployeeData() == newParentWinner) {
             break;
         }
 
-        // 3. 부모의 Winner를 업데이트하고, 다음 레벨로 이동
+        // Update the parent's winner and move to the next level
         parent->setEmployeeData(newParentWinner);
         current = parent;
     }

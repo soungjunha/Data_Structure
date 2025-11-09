@@ -6,34 +6,53 @@
 #include "BpTreeIndexNode.h"
 #include "EmployeeData.h"
 #include "SelectionTree.h"
-#include <fstream> // Need this for ofstream
+#include <fstream>
 
+// B+ Tree class for managing employee data sorted by name
+// Employee data is stored in data nodes (leaves) and sorted by name in ascending order
+// Index nodes contain keys and pointers to navigate the tree
 class BpTree {
 private:
-	BpTreeNode* root;
-	int	order;		// m children
-	std::ofstream* fout; // For printing (e.g., in searchRange)
+	BpTreeNode* root;      // Root node of the B+ tree
+	int	order;             // Order of the B+ tree (m children)
+	std::ofstream* fout;   // Output file stream for printing results
 
 public:
+	// Constructor: initializes B+ tree with given order (default 3)
 	BpTree(std::ofstream *fout, int order = 3) {
-		// Initialize member variables
-		this->root = nullptr;
+		this->root = NULL;
 		this->order = order;
 		this->fout = fout;
 	}
 	
+	// Destructor
 	~BpTree() {
-
+		// TODO: Implement recursive deletion of all nodes
 	}
 
-	bool		Insert(EmployeeData* newData);
-	bool		excessDataNode(BpTreeNode* pDataNode);
-	bool		excessIndexNode(BpTreeNode* pIndexNode);
-	void		splitDataNode(BpTreeNode* pDataNode);
-	void		splitIndexNode(BpTreeNode* pIndexNode);
+	// Insert employee data into the B+ tree
+	bool Insert(EmployeeData* newData);
+
+	// Check if a data node has exceeded its capacity
+	bool excessDataNode(BpTreeNode* pDataNode);
+
+	// Check if an index node has exceeded its capacity
+	bool excessIndexNode(BpTreeNode* pIndexNode);
+
+	// Split a data node that has overflowed
+	void splitDataNode(BpTreeNode* pDataNode);
+
+	// Split an index node that has overflowed
+	void splitIndexNode(BpTreeNode* pIndexNode);
+
+	// Get the root node of the B+ tree
 	BpTreeNode* getRoot() { return root; }
+
+	// Search for the data node containing or should contain the given name
 	BpTreeNode* searchDataNode(string name);
-	void		searchRange(string start, string end);
+
+	// Search and print all employees in the name range [start, end]
+	void searchRange(string start, string end);
 };
 
 #endif

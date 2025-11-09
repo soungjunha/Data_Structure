@@ -1,13 +1,12 @@
 #include "Manager.h"
 #include <string>
 #include <fstream>
-#include <sstream> // For parsing lines
-#include <vector>  // For ADD_ST_DEPTNO
+#include <sstream>
+#include <vector>
 
-/**
- * @brief Reads commands from the file and executes them.
- * @param command Filename of the command file (e.g., "command.txt")
- */
+// Main function to read and execute commands from the command file
+// Reads commands line by line and executes each command
+// Commands must be in uppercase
 void Manager::run(const char* command) {
     fin.open(command);
     if (!fin.is_open()) {
@@ -100,7 +99,7 @@ void Manager::run(const char* command) {
         } 
         else if (cmdName == "EXIT") {
             printSuccessCode("EXIT");
-            break; // Exit loop
+            break; // Exit loop and terminate program
         } 
         else {
             printErrorCode(800); // Invalid command
@@ -110,11 +109,11 @@ void Manager::run(const char* command) {
     fin.close();
 }
 
-/**
- * @brief Loads employee.txt into BpTree.
- */
+// Load employee data from employee.txt into B+ Tree
+// Data fields are separated by tabs '\t'
+// If data already exists or file does not exist, prints error code 100
 void Manager::LOAD() {
-    if (bptree->getRoot() != nullptr) {
+    if (bptree->getRoot() != NULL) {
         printErrorCode(100); // Data already exists
         return;
     }
@@ -146,10 +145,9 @@ void Manager::LOAD() {
     printSuccessCode("LOAD");
 }
 
-/**
- * @brief Adds a single employee to BpTree.
- * (This function signature is modified to be logical)
- */
+// Add a single employee directly to the B+ Tree
+// If employee does not exist in B+ Tree, creates new node
+// If employee already exists, only updates the salary
 void Manager::ADD_BP(string name, int dept_no, int id, int income) {
     EmployeeData* newData = new EmployeeData();
     newData->setData(name, dept_no, id, income);
@@ -161,13 +159,13 @@ void Manager::ADD_BP(string name, int dept_no, int id, int income) {
     flog << "====================\n\n";
 }
 
-/**
- * @brief Searches BpTree for a single name.
- */
+// Search for an employee by name in the B+ Tree
+// Prints the search result
+// Prints error code 300 if not found or tree is empty
 void Manager::SEARCH_BP_NAME(string name) {
     // searchDataNode finds the leaf, then we search the map
     BpTreeNode* leaf = bptree->searchDataNode(name);
-    if(leaf == nullptr) {
+    if(leaf == NULL) {
         printErrorCode(300); // Tree is empty
         return;
     }
@@ -186,11 +184,11 @@ void Manager::SEARCH_BP_NAME(string name) {
     }
 }
 
-/**
- * @brief Searches BpTree for a range of names.
- */
+// Search for employees within a name range [start, end] in the B+ Tree
+// For example, start="a" and end="c" prints all employees where a <= name <= c
+// Prints error code 300 if tree is empty
 void Manager::SEARCH_BP_RANGE(string start, string end) {
-    if(bptree->getRoot() == nullptr) {
+    if(bptree->getRoot() == NULL) {
         printErrorCode(300); // Tree is empty
         return;
     }
@@ -201,11 +199,10 @@ void Manager::SEARCH_BP_RANGE(string start, string end) {
     flog << "=========================\n\n";
 }
 
-/**
- * @brief Prints all data in BpTree in name-ascending order.
- */
+// Print all employees in the B+ Tree in name-ascending order
+// Prints error code 400 if tree is empty
 void Manager::PRINT_BP() {
-    if(bptree->getRoot() == nullptr) {
+    if(bptree->getRoot() == NULL) {
         printErrorCode(400); // Tree is empty
         return;
     }
@@ -213,15 +210,17 @@ void Manager::PRINT_BP() {
     flog << "========PRINT_BP========\n";
     // Find the left-most leaf node to start
     BpTreeNode* pCur = bptree->getRoot();
-    while (pCur->getDataMap() == nullptr) {
+    while (pCur->getDataMap() == NULL) {
         pCur = pCur->getMostLeftChild();
     }
     
     // Iterate through all leaf nodes using the linked list
     BpTreeDataNode* pLeaf = static_cast<BpTreeDataNode*>(pCur);
-    while (pLeaf != nullptr) {
+    while (pLeaf != NULL) {
         // Iterate through the map (which is sorted by name)
-        for (auto const& [name, data] : *(pLeaf->getDataMap())) {
+        map<string, EmployeeData*>* dataMap = pLeaf->getDataMap();
+        for (map<string, EmployeeData*>::iterator it = dataMap->begin(); it != dataMap->end(); ++it) {
+            EmployeeData* data = it->second;
             flog << data->getName() << "/" << data->getDeptNo() << "/"
                  << data->getID() << "/" << data->getIncome() << "\n";
         }
@@ -231,18 +230,19 @@ void Manager::PRINT_BP() {
     flog << "========================\n\n";
 }
 
-/**
- * @brief Adds employees from BpTree to SelectionTree by department.
- */
+// Copy employees from B+ Tree to Selection Tree by department code
+// Searches B+ Tree from first to last in ascending order
+// Data is inserted into the appropriate heap and Selection Tree is updated
+// Prints error code 500 if data not found or B+ Tree is empty
 void Manager::ADD_ST_DEPTNO(int dept_no) {
-    if(bptree->getRoot() == nullptr) {
+    if(bptree->getRoot() == NULL) {
         printErrorCode(500); // B+ Tree is empty
         return;
     }
 
     // Find the left-most leaf node
     BpTreeNode* pCur = bptree->getRoot();
-    while (pCur->getDataMap() == nullptr) {
+    while (pCur->getDataMap() == NULL) {
         pCur = pCur->getMostLeftChild();
     }
     
@@ -250,9 +250,9 @@ void Manager::ADD_ST_DEPTNO(int dept_no) {
     bool found = false;
 
     // Iterate through all data nodes (leaves)
-    while (pLeaf != nullptr) {
+    while (pLeaf != NULL) {
         
-        // C++11 호환되는 map 순회 코드
+        // C++11 compatible map iteration
         map<string, EmployeeData*>* dataMap = pLeaf->getDataMap();
         for (auto it = dataMap->begin(); it != dataMap->end(); ++it) {
             EmployeeData* data = it->second;
@@ -275,11 +275,11 @@ void Manager::ADD_ST_DEPTNO(int dept_no) {
     }
 }
 
-/**
- * @brief Adds a single employee from BpTree to SelectionTree by name.
- */
+// Copy a single employee from B+ Tree to Selection Tree by name
+// Uses IndexNode navigation (like SEARCH_BP) to find the employee
+// Prints error code 500 if not found or B+ Tree is empty
 void Manager::ADD_ST_NAME(string name) {
-    if(bptree->getRoot() == nullptr) {
+    if(bptree->getRoot() == NULL) {
         printErrorCode(500); // B+ Tree is empty
         return;
     }
@@ -303,10 +303,9 @@ void Manager::ADD_ST_NAME(string name) {
     }
 }
 
-/**
- * @brief Prints data from a specific department heap in SelectionTree.
- * (This function signature is modified to be logical)
- */
+// Print all employees in a specific department heap from Selection Tree
+// Prints employees sorted by income in descending order
+// Prints error code 600 if tree is empty, heap does not exist, or invalid department
 void Manager::PRINT_ST(int dept_no) {
     // printEmployeeData returns false on error (wrong dept, empty heap)
     // printEmployeeData handles both header/footer and data output
@@ -315,9 +314,10 @@ void Manager::PRINT_ST(int dept_no) {
     }
 }
 
-/**
- * @brief Deletes the employee with the highest salary from SelectionTree.
- */
+// Delete the employee with the highest salary from Selection Tree
+// Removes the employee in the root node (highest income)
+// When removed, if heap's income relationships change, heap is reorganized
+// Prints error code 700 if no data exists
 void Manager::DELETE() {
     if (!stree->Delete()) { // Delete returns false if tree is empty
         printErrorCode(700);
@@ -326,18 +326,16 @@ void Manager::DELETE() {
     }
 }
 
-/**
- * @brief Prints an error code to the log file.
- */
+// Print an error code to the log file
+// Error codes: 100-LOAD, 200-ADD_BP, 300-SEARCH_BP, 400-PRINT_BP
+//              500-ADD_ST, 600-PRINT_ST, 700-DELETE, 800-Invalid command
 void Manager::printErrorCode(int n) {
 	flog << "========ERROR========\n";
 	flog << n << "\n";
 	flog << "=====================\n\n";
 }
 
-/**
- * @brief Prints a success message with command header to the log file.
- */
+// Print a success message with command header to the log file
 void Manager::printSuccessCode(string command) {
 	flog << "========" << command << "========\n";
 	flog << "Success\n";

@@ -1,7 +1,10 @@
 #pragma once
 #include "EmployeeHeap.h"
-#include <algorithm> // for std::swap
+#include <algorithm>
 
+// Insert employee data into the max heap
+// New nodes are added from the left child first
+// Heap is resized if necessary and maintained through UpHeap
 void EmployeeHeap::Insert(EmployeeData* data) {
     // Check if resize is needed
     if (datanum + 1 >= maxCapacity) {
@@ -16,13 +19,16 @@ void EmployeeHeap::Insert(EmployeeData* data) {
     UpHeap(datanum);
 }
 
+// Get the employee with the highest income (root of max heap)
 EmployeeData* EmployeeHeap::Top() {
     if (IsEmpty()) {
-        return nullptr;
+        return NULL;
     }
     return heapArr[1]; // Root of the max heap
 }
 
+// Delete the employee with the highest income from the heap
+// When the heap is reorganized, the Selection Tree is also reorganized accordingly
 void EmployeeHeap::Delete() {
     if (IsEmpty()) {
         return;
@@ -38,10 +44,13 @@ void EmployeeHeap::Delete() {
     }
 }
 
+// Check if the heap is empty
 bool EmployeeHeap::IsEmpty() {
     return datanum == 0;
 }
 
+// Perform up-heap operation to maintain max heap property
+// Compares the element with its parent and swaps if child's income is greater
 void EmployeeHeap::UpHeap(int index) {
     if (index <= 1) {
         return; // At root
@@ -49,13 +58,15 @@ void EmployeeHeap::UpHeap(int index) {
 
     int parentIndex = index / 2;
 
-    // Compare incomes (Max Heap) 
+    // Compare incomes (Max Heap) - parent must be >= child
     if (heapArr[index]->getIncome() > heapArr[parentIndex]->getIncome()) {
         std::swap(heapArr[index], heapArr[parentIndex]);
         UpHeap(parentIndex); // Recurse on parent
     }
 }
 
+// Perform down-heap operation to maintain max heap property
+// Sorting is complete when all parent incomes are >= children incomes
 void EmployeeHeap::DownHeap(int index) {
     int leftChild = 2 * index;
     int rightChild = 2 * index + 1;
@@ -67,11 +78,10 @@ void EmployeeHeap::DownHeap(int index) {
     }
 
     // Case 2: One child (only left)
-    // No need to check, 'largerChild' is already 'leftChild'.
+    // No need to check, 'largerChild' is already 'leftChild'
 
-    // Case 3: Two children
+    // Case 3: Two children - find the child with larger income
     if (rightChild <= datanum) {
-        // Find the child with the larger income
         if (heapArr[rightChild]->getIncome() > heapArr[leftChild]->getIncome()) {
             largerChild = rightChild;
         }
@@ -84,6 +94,8 @@ void EmployeeHeap::DownHeap(int index) {
     }
 }
 
+// Resize the heap array when capacity is exceeded
+// Doubles the capacity through dynamic allocation
 void EmployeeHeap::ResizeArray() {
     int newCapacity = maxCapacity * 2;
     EmployeeData** newArr = new EmployeeData*[newCapacity];

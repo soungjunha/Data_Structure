@@ -1,50 +1,65 @@
 #pragma once
 #include "SelectionTreeNode.h"
-#include <fstream> // Need this for ofstream
+#include <fstream>
 
+// Selection Tree class for managing employee salary rankings
+// Implements a Max Winner Tree structure based on employee income
+// Has 8 runs (leaf nodes) corresponding to 8 department codes (100~800)
+// Tree is implemented using pointers (not arrays)
 class SelectionTree {
 private:
-    SelectionTreeNode* root;
-    ofstream* fout;
-    SelectionTreeNode* run[8]; // [0] = 100, [1] = 200, ... [7] = 800
+    SelectionTreeNode* root;           // Root node of the Selection Tree
+    ofstream* fout;                    // Output file stream for logging
+    SelectionTreeNode* run[8];         // 8 leaf nodes: [0]=100, [1]=200, ..., [7]=800
 
+    // Convert department code to run index
     int getRunIndex(int dept_no) {return (dept_no / 100) - 1;}
+
+    // Update the Selection Tree from a leaf node up to the root
+    // When the heap is reorganized, the Selection Tree is also reorganized
     void updateTree(SelectionTreeNode* node);
 
 public:
+    // Constructor: creates 8 leaf nodes with heaps and builds tree structure
+    // Number of runs equals the number of department codes
     SelectionTree(std::ofstream* fout) {
         this->fout = fout;
-        this->root = nullptr;
+        this->root = NULL;
 
-        // 1. 8개의 리프 노드(run)를 생성하고 각 노드에 Heap을 생성합니다.
+        // Create 8 leaf nodes (runs) and initialize a heap for each
         for (int i = 0; i < 8; i++) {
             run[i] = new SelectionTreeNode();
-            run[i]->HeapInit(); // 각 리프 노드가 EmployeeHeap을 갖도록 함
+            run[i]->HeapInit(); // Each leaf node gets an EmployeeHeap
         }
         
-        // 2. 리프 노드를 기반으로 상위 트리 구조를 구축합니다.
+        // Build the tree structure based on the leaf nodes
         setTree();
     }
 
+    // Destructor
     ~SelectionTree() {
-        // TODO: 모든 노드(run[8] 및 상위 노드)를 재귀적으로 삭제해야 합니다.
-        // delete root; (재귀 삭제 구현 필요)
+        // TODO: Recursively delete all nodes (run[8] and internal nodes)
         for (int i = 0; i < 8; i++) {
-            delete run[i]; // 각 리프 노드(와 그 안의 Heap) 삭제
+            delete run[i]; // Delete each leaf node (and its heap)
         }
-        // ... (내부 노드들도 삭제해야 함)
+        // ... (Internal nodes also need to be deleted)
     }
 
+    // Set the root node of the Selection Tree
     void setRoot(SelectionTreeNode* pN) { this->root = pN; }
+
+    // Get the root node of the Selection Tree
     SelectionTreeNode* getRoot() { return root; }
 
+    // Build the Selection Tree structure from leaf nodes
     void setTree();
 
+    // Insert employee data into the Selection Tree
     bool Insert(EmployeeData* newData);
-    bool Delete();
-    bool printEmployeeData(int dept_no);
 
-    // Private helper functions (SelectionTree.cpp에 구현)
-private:
-    
+    // Delete the employee with the highest salary from the Selection Tree
+    bool Delete();
+
+    // Print all employees from a specific department's heap
+    bool printEmployeeData(int dept_no);
 };
