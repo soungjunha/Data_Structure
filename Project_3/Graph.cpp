@@ -1,16 +1,29 @@
 #include "Graph.h"
 
+// Constructor
+// Initializes the graph type and size (number of vertices)
 Graph::Graph(bool type, int size)
 {
-	m_Type = type;
-	m_Size = size;
+	this->m_Type = type;
+	this->m_Size = size;
 }
 
-Graph::~Graph()	
+// Destructor
+// Virtual destructor to ensure proper cleanup of derived classes
+Graph::~Graph()
 {
-
 }
 
+// Getter for graph type
+// Returns true for MatrixGraph, false for ListGraph (depending on implementation in Manager)
+bool Graph::getType()
+{
+	return this->m_Type;
+}
 
-bool Graph::getType(){return m_Type;}	
-int Graph::getSize(){return m_Size;}
+// Getter for graph size
+// Returns the number of vertices in the graph
+int Graph::getSize()
+{
+	return this->m_Size;
+}
