@@ -9,35 +9,41 @@
 Manager::Manager()	
 {
 	graph = nullptr;	
-	fout.open("log.txt", ios::app);
-	load = 0;	//Anything is not loaded
+	// Clear log.txt at start
+	fout.open("log.txt", ios::trunc);
+	fout.close();
+	load = 0;
 }
 
 Manager::~Manager()
 {
-	if(load)	//if graph is loaded, delete graph
+	if(load)
 		delete graph;	
-	if(fout.is_open())	//if fout is opened, close file
-		fout.close();	//close log.txt File
+	if(fout.is_open())
+		fout.close();
 }
 
 void Manager::run(const char* command_txt){
-	ifstream fin;	//Command File Input File Stream
-	fin.open(command_txt, ios_base::in);//File open with read mode
+	ifstream fin;
+	fin.open(command_txt, ios_base::in);
 		
-	if(!fin) { //If command File cannot be read, Print error
+	if(!fin) {
 		fout<<"command file open error"<<endl;
-		return;	//Return
+		return;
 	}
+	
 	string line;
 	while(getline(fin, line)){
+		// Skip empty lines
+		if(line.empty()) continue;
+		
 		stringstream ss(line);
 		string cmd;
 		ss >> cmd;
 
 		if(cmd == "LOAD"){
 			string filename, extra;
-			if(ss >> filename && !(ss >> extra)){ // Check for exact argument count
+			if(ss >> filename && !(ss >> extra)){
 				if(!LOAD(filename.c_str())){
 					printErrorCode(100);
 				}
@@ -60,7 +66,9 @@ void Manager::run(const char* command_txt){
 			int vertex;
 			string extra;
 			if(ss >> option >> vertex && !(ss >> extra)){
-				if(!mBFS(option, vertex)){
+				if(option != 'O' && option != 'X'){
+					printErrorCode(300);
+				} else if(!mBFS(option, vertex)){
 					printErrorCode(300);
 				}
 			} else {
@@ -72,7 +80,9 @@ void Manager::run(const char* command_txt){
 			int vertex;
 			string extra;
 			if(ss >> option >> vertex && !(ss >> extra)){
-				if(!mDFS(option, vertex)){
+				if(option != 'O' && option != 'X'){
+					printErrorCode(400);
+				} else if(!mDFS(option, vertex)){
 					printErrorCode(400);
 				}
 			} else {
@@ -94,7 +104,9 @@ void Manager::run(const char* command_txt){
 			int vertex;
 			string extra;
 			if(ss >> option >> vertex && !(ss >> extra)){
-				if(!mDIJKSTRA(option, vertex)){
+				if(option != 'O' && option != 'X'){
+					printErrorCode(600);
+				} else if(!mDIJKSTRA(option, vertex)){
 					printErrorCode(600);
 				}
 			} else {
@@ -106,7 +118,9 @@ void Manager::run(const char* command_txt){
 			int s_vertex, e_vertex;
 			string extra;
 			if(ss >> option >> s_vertex >> e_vertex && !(ss >> extra)){
-				if(!mBELLMANFORD(option, s_vertex, e_vertex)){
+				if(option != 'O' && option != 'X'){
+					printErrorCode(700);
+				} else if(!mBELLMANFORD(option, s_vertex, e_vertex)){
 					printErrorCode(700);
 				}
 			} else {
@@ -117,7 +131,9 @@ void Manager::run(const char* command_txt){
 			char option;
 			string extra;
 			if(ss >> option && !(ss >> extra)){
-				if(!mFLOYD(option)){
+				if(option != 'O' && option != 'X'){
+					printErrorCode(800);
+				} else if(!mFLOYD(option)){
 					printErrorCode(800);
 				}
 			} else {
@@ -135,9 +151,11 @@ void Manager::run(const char* command_txt){
 			}
 		}
 		else if(cmd == "EXIT"){
+			fout.open("log.txt", ios::app);
 			fout << "========EXIT========" << endl;
 			fout << "Success" << endl;
 			fout << "====================" << endl << endl;
+			fout.close();
 			break;
 		}
 	}
@@ -160,37 +178,42 @@ bool Manager::LOAD(const char* filename)
 
 	char type;
 	int size;
-	// Read Header (Type and Size)
-	// Example:
-	// L
-	// 8
+	
 	string line;
 	if(!getline(file, line)) return false;
 	type = line[0];
 	if(!getline(file, line)) return false;
 	size = stoi(line);
 
+	// Validate size
+	if(size < 5) return false;
+
 	// Instantiate appropriate graph
 	if(type == 'L'){
-		graph = new ListGraph(false, size); // Assuming undirected as base, algorithms handle direction
+		graph = new ListGraph(false, size);
 	}
 	else if(type == 'M'){
-		graph = new MatrixGraph(false, size);
+		graph = new MatrixGraph(true, size);
 	}
 	else {
-		return false; // Invalid type
+		return false;
 	}
 
 	if(type == 'L'){
 		// List Graph Parsing
-		// Format: 
-		// Source Vertex (Line)
-		// Dest Weight Dest Weight ... (Line)
-		while(getline(file, line)){
-			if(line.empty()) continue; 
-			int src = stoi(line); // Source Vertex
-
-			if(!getline(file, line)) break; // Error or End of file unexpectedly
+		// Format: Each vertex has two lines:
+		// Line 1: Source vertex number (single integer)
+		// Line 2: Destination weight pairs (dest1 weight1 dest2 weight2 ...)
+		//         Can be empty or just whitespace if no edges
+		for(int v = 0; v < size; v++){
+			// Read vertex line
+			if(!getline(file, line)) break;
+			int src = stoi(line);
+			
+			// Read edges line
+			if(!getline(file, line)) break;
+			
+			// Parse edges
 			stringstream ss(line);
 			int dst, weight;
 			while(ss >> dst >> weight){
@@ -200,10 +223,9 @@ bool Manager::LOAD(const char* filename)
 	}
 	else if(type == 'M'){
 		// Matrix Graph Parsing
-		// Format: Matrix of weights
 		int weight;
 		for(int i = 0; i < size; i++){
-			getline(file, line);
+			if(!getline(file, line)) break;
 			stringstream ss(line);
 			for(int j = 0; j < size; j++){
 				if(ss >> weight){
@@ -215,64 +237,73 @@ bool Manager::LOAD(const char* filename)
 		}
 	}
 
+	file.close();
 	load = 1;
+	
+	// Open fout in append mode for writing
+	fout.open("log.txt", ios::app);
 	fout << "========LOAD========" << endl;
 	fout << "Success" << endl;
 	fout << "====================" << endl << endl;
+	fout.close();
 	return true;
 }
 
 bool Manager::PRINT()
 {
-	if(graph == nullptr) return false;
-	if(graph->printGraph(&fout)) return true;
-	return false;
+	if(graph == nullptr || load == 0) return false;
+	fout.open("log.txt", ios::app);
+	bool result = graph->printGraph(&fout);
+	fout.close();
+	return result;
 }
 
 bool Manager::mBFS(char option, int vertex)
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return BFS(graph, option, vertex);
 }
 
 bool Manager::mDFS(char option, int vertex)
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return DFS(graph, option, vertex);
 }
 
 bool Manager::mDIJKSTRA(char option, int vertex)
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return Dijkstra(graph, option, vertex);
 }
 
 bool Manager::mKRUSKAL()
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return Kruskal(graph);
 }
 
 bool Manager::mBELLMANFORD(char option, int s_vertex, int e_vertex)
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return Bellmanford(graph, option, s_vertex, e_vertex);
 }
 
 bool Manager::mFLOYD(char option)
 {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return FLOYD(graph, option);
 }
 
 bool Manager::mCentrality() {
-	if(graph == nullptr) return false;
+	if(graph == nullptr || load == 0) return false;
 	return Centrality(graph);
 }
 
 void Manager::printErrorCode(int n)
 {
+	fout.open("log.txt", ios::app);
 	fout<<"========ERROR======="<<endl;
 	fout<<n<<endl;
 	fout<<"===================="<<endl << endl;
+	fout.close();
 }
