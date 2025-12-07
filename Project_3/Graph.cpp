@@ -4,8 +4,8 @@
 // Initializes the graph type and size (number of vertices)
 Graph::Graph(bool type, int size)
 {
-	this->m_Type = type;
-	this->m_Size = size;
+	this->m_type = type;
+	this->m_size = size;
 }
 
 // Destructor
@@ -15,15 +15,15 @@ Graph::~Graph()
 }
 
 // Getter for graph type
-// Returns true for MatrixGraph, false for ListGraph (depending on implementation in Manager)
+// Returns true for MatrixGraph, false for ListGraph
 bool Graph::getType()
 {
-	return this->m_Type;
+	return this->m_type;
 }
 
 // Getter for graph size
 // Returns the number of vertices in the graph
 int Graph::getSize()
 {
-	return this->m_Size;
+	return this->m_size;
 }

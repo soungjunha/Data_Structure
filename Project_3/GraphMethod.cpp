@@ -16,13 +16,18 @@
 using namespace std;
 
 // Utility function to check if vertex is valid
+// Returns true if vertex is within valid range [0, graph_size)
 bool isValidVertex(Graph* graph, int vertex) {
     return vertex >= 0 && vertex < graph->getSize();
 }
 
 // Edge structure for Kruskal algorithm
+// Represents an undirected edge with two vertices and a weight
 struct Edge {
     int u, v, weight;
+    
+    // Comparison operator for sorting edges
+    // Sorts by weight first, then by u, then by v
     bool operator<(const Edge& other) const {
         if (weight != other.weight) return weight < other.weight;
         if (u != other.u) return u < other.u;
@@ -31,15 +36,20 @@ struct Edge {
 };
 
 // Disjoint Set (Union-Find) for Kruskal algorithm
+// Used to detect cycles and manage connected components
 struct DisjointSet {
-    vector<int> parent, rank_arr;
+    vector<int> parent;     // Parent of each element
+    vector<int> rank_arr;   // Rank for union by rank optimization
     
+    // Constructor: initializes n elements, each in its own set
     DisjointSet(int n) {
         parent.resize(n);
         rank_arr.resize(n, 0);
         for (int i = 0; i < n; i++) parent[i] = i;
     }
     
+    // Find operation with path compression
+    // Returns the representative (root) of the set containing i
     int find(int i) {
         if (parent[i] != i) {
             parent[i] = find(parent[i]); // Path compression
@@ -47,6 +57,8 @@ struct DisjointSet {
         return parent[i];
     }
     
+    // Union operation with union by rank
+    // Merges the sets containing i and j
     void unite(int i, int j) {
         int root_i = find(i);
         int root_j = find(j);
@@ -64,7 +76,8 @@ struct DisjointSet {
     }
 };
 
-// BFS Algorithm
+// BFS Algorithm - Breadth-First Search
+// Traverses the graph level by level starting from the given vertex
 bool BFS(Graph* graph, char option, int vertex)
 {
     if (graph == nullptr || !isValidVertex(graph, vertex)) return false;
@@ -74,9 +87,10 @@ bool BFS(Graph* graph, char option, int vertex)
     if (!fout.is_open()) return false;
 
     int size = graph->getSize();
-    vector<bool> visited(size, false);
-    queue<int> q;
+    vector<bool> visited(size, false);  // Track visited vertices
+    queue<int> q;                        // Queue for BFS
 
+    // Start BFS from the given vertex
     q.push(vertex);
     visited[vertex] = true;
 
@@ -90,10 +104,12 @@ bool BFS(Graph* graph, char option, int vertex)
         int curr = q.front();
         q.pop();
 
+        // Print current vertex
         if (!first) fout << " -> ";
         fout << curr;
         first = false;
 
+        // Get adjacent vertices based on graph direction
         map<int, int> adj;
         if (option == 'O') graph->getAdjacentEdgesDirect(curr, &adj);
         else graph->getAdjacentEdges(curr, &adj);
@@ -114,7 +130,8 @@ bool BFS(Graph* graph, char option, int vertex)
     return true;
 }
 
-// DFS Algorithm
+// DFS Algorithm - Depth-First Search
+// Traverses the graph by going as deep as possible before backtracking
 bool DFS(Graph* graph, char option, int vertex)
 {
     if (graph == nullptr || !isValidVertex(graph, vertex)) return false;
@@ -124,8 +141,8 @@ bool DFS(Graph* graph, char option, int vertex)
     if (!fout.is_open()) return false;
 
     int size = graph->getSize();
-    vector<bool> visited(size, false);
-    stack<int> s;
+    vector<bool> visited(size, false);  // Track visited vertices
+    stack<int> s;                        // Stack for DFS
 
     s.push(vertex);
     
@@ -139,13 +156,16 @@ bool DFS(Graph* graph, char option, int vertex)
         int curr = s.top();
         s.pop();
 
+        // Skip if already visited
         if (visited[curr]) continue;
         visited[curr] = true;
 
+        // Print current vertex
         if (!first) fout << " -> ";
         fout << curr;
         first = false;
 
+        // Get adjacent vertices based on graph direction
         map<int, int> adj;
         if (option == 'O') graph->getAdjacentEdgesDirect(curr, &adj);
         else graph->getAdjacentEdges(curr, &adj);
@@ -165,16 +185,18 @@ bool DFS(Graph* graph, char option, int vertex)
     return true;
 }
 
-// Kruskal Algorithm - MST (undirected, weighted)
+// Kruskal Algorithm - Minimum Spanning Tree
+// Finds MST by greedily selecting minimum weight edges that don't create cycles
 bool Kruskal(Graph* graph)
 {
     if (graph == nullptr) return false;
 
     int size = graph->getSize();
     vector<Edge> edges;
-    set<pair<pair<int,int>, int>> edgeSet; // To avoid duplicate edges
+    set<pair<pair<int,int>, int>> edge_set; // To avoid duplicate edges
 
     // Collect all edges (treat as undirected)
+    // Step 1: Collect from directed edges
     for (int i = 0; i < size; i++) {
         map<int, int> adj;
         graph->getAdjacentEdgesDirect(i, &adj);
@@ -185,15 +207,15 @@ bool Kruskal(Graph* graph)
             int u_min = min(i, v);
             int v_max = max(i, v);
             
-            // Check if edge already exists
-            if (edgeSet.find({{u_min, v_max}, w}) == edgeSet.end()) {
-                edgeSet.insert({{u_min, v_max}, w});
+            // Check if edge already exists (avoid duplicates)
+            if (edge_set.find({{u_min, v_max}, w}) == edge_set.end()) {
+                edge_set.insert({{u_min, v_max}, w});
                 edges.push_back({u_min, v_max, w});
             }
         }
     }
     
-    // Also check reverse edges for undirected treatment
+    // Step 2: Also check reverse edges for undirected treatment
     for (int i = 0; i < size; i++) {
         map<int, int> adj;
         graph->getAdjacentEdges(i, &adj);
@@ -204,28 +226,31 @@ bool Kruskal(Graph* graph)
             int u_min = min(i, v);
             int v_max = max(i, v);
             
-            if (edgeSet.find({{u_min, v_max}, w}) == edgeSet.end()) {
-                edgeSet.insert({{u_min, v_max}, w});
+            if (edge_set.find({{u_min, v_max}, w}) == edge_set.end()) {
+                edge_set.insert({{u_min, v_max}, w});
                 edges.push_back({u_min, v_max, w});
             }
         }
     }
 
-    // Sort edges by weight
+    // Sort edges by weight (ascending order)
     sort(edges.begin(), edges.end());
 
     DisjointSet ds(size);
-    int mst_weight = 0;
-    int edges_count = 0;
+    int mst_weight = 0;      // Total weight of MST
+    int edges_count = 0;     // Number of edges in MST
     
     // MST adjacency list for output
     vector<map<int, int>> mst_adj(size);
 
+    // Kruskal's algorithm: process edges in order of increasing weight
     for (const auto& edge : edges) {
+        // If adding this edge doesn't create a cycle
         if (ds.find(edge.u) != ds.find(edge.v)) {
             ds.unite(edge.u, edge.v);
             mst_weight += edge.weight;
             edges_count++;
+            // Add edge to both vertices (undirected)
             mst_adj[edge.u].insert({edge.v, edge.weight});
             mst_adj[edge.v].insert({edge.u, edge.weight});
         }
@@ -234,6 +259,7 @@ bool Kruskal(Graph* graph)
     // Check if MST connects all vertices (should have size-1 edges)
     if (edges_count != size - 1) return false;
 
+    // Output MST to file
     ofstream fout;
     fout.open("log.txt", ios::app);
     if (!fout.is_open()) return false;
@@ -254,13 +280,14 @@ bool Kruskal(Graph* graph)
 }
 
 // Dijkstra Algorithm - Single Source Shortest Path (no negative weights)
+// Uses priority queue to find shortest paths from source to all vertices
 bool Dijkstra(Graph* graph, char option, int vertex)
 {
     if (graph == nullptr || !isValidVertex(graph, vertex)) return false;
 
     int size = graph->getSize();
     
-    // Check for negative weights
+    // Check for negative weights (Dijkstra doesn't work with negative weights)
     for (int i = 0; i < size; i++) {
         map<int, int> adj;
         if (option == 'O') graph->getAdjacentEdgesDirect(i, &adj);
@@ -270,24 +297,29 @@ bool Dijkstra(Graph* graph, char option, int vertex)
         }
     }
 
-    vector<long long> dist(size, INF);
-    vector<int> parent(size, -1);
+    vector<long long> dist(size, INF);  // Distance from source to each vertex
+    vector<int> parent(size, -1);        // Parent of each vertex in shortest path tree
     priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
 
+    // Initialize source vertex
     dist[vertex] = 0;
     pq.push({0, vertex});
 
+    // Dijkstra's algorithm main loop
     while (!pq.empty()) {
         long long d = pq.top().first;
         int u = pq.top().second;
         pq.pop();
 
+        // Skip if we've already found a shorter path
         if (d > dist[u]) continue;
 
+        // Get adjacent vertices
         map<int, int> adj;
         if (option == 'O') graph->getAdjacentEdgesDirect(u, &adj);
         else graph->getAdjacentEdges(u, &adj);
 
+        // Relax edges
         for (auto const& item : adj) {
             int v = item.first;
             int w = item.second;
@@ -299,6 +331,7 @@ bool Dijkstra(Graph* graph, char option, int vertex)
         }
     }
 
+    // Output results
     ofstream fout;
     fout.open("log.txt", ios::app);
     if (!fout.is_open()) return false;
@@ -308,12 +341,13 @@ bool Dijkstra(Graph* graph, char option, int vertex)
     else fout << "Undirected Graph Dijkstra" << endl;
     fout << "Start: " << vertex << endl;
 
+    // Print shortest path to each vertex
     for (int i = 0; i < size; i++) {
         fout << "[" << i << "] ";
         if (dist[i] == INF) {
             fout << "x" << endl;
         } else {
-            // Reconstruct path
+            // Reconstruct path from source to i
             vector<int> path;
             int curr = i;
             while (curr != -1) {
@@ -337,13 +371,14 @@ bool Dijkstra(Graph* graph, char option, int vertex)
 }
 
 // Bellman-Ford Algorithm - Single Source Shortest Path (handles negative weights)
+// Can detect negative cycles and works with negative edge weights
 bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex)
 {
     if (graph == nullptr || !isValidVertex(graph, s_vertex) || !isValidVertex(graph, e_vertex)) return false;
 
     int size = graph->getSize();
-    vector<long long> dist(size, INF);
-    vector<int> parent(size, -1);
+    vector<long long> dist(size, INF);  // Distance from source to each vertex
+    vector<int> parent(size, -1);        // Parent of each vertex in shortest path tree
     dist[s_vertex] = 0;
 
     // Collect all edges based on direction option
@@ -361,7 +396,7 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex)
         }
     }
 
-    // Relax edges |V| - 1 times
+    // Relax edges |V| - 1 times (Bellman-Ford main loop)
     for (int i = 0; i < size - 1; i++) {
         bool updated = false;
         for (const auto& edge : edges) {
@@ -381,6 +416,7 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex)
         }
     }
 
+    // Output results
     ofstream fout;
     fout.open("log.txt", ios::app);
     if (!fout.is_open()) return false;
@@ -392,7 +428,7 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex)
     if (dist[e_vertex] == INF) {
         fout << "x" << endl;
     } else {
-        // Reconstruct path
+        // Reconstruct path from source to destination
         vector<int> path;
         int curr = e_vertex;
         while (curr != -1) {
@@ -416,6 +452,7 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex)
 }
 
 // Floyd-Warshall Algorithm - All Pairs Shortest Path
+// Computes shortest paths between all pairs of vertices
 bool FLOYD(Graph* graph, char option)
 {
     if (graph == nullptr) return false;
@@ -423,7 +460,7 @@ bool FLOYD(Graph* graph, char option)
     int size = graph->getSize();
     vector<vector<long long>> dist(size, vector<long long>(size, INF));
 
-    // Initialize diagonal to 0
+    // Initialize diagonal to 0 (distance from vertex to itself)
     for (int i = 0; i < size; i++) dist[i][i] = 0;
 
     // Initialize with edge weights
@@ -440,9 +477,13 @@ bool FLOYD(Graph* graph, char option)
     }
 
     // Floyd-Warshall main loop
+    // For each intermediate vertex k
     for (int k = 0; k < size; k++) {
+        // For each source vertex i
         for (int i = 0; i < size; i++) {
+            // For each destination vertex j
             for (int j = 0; j < size; j++) {
+                // If path through k is shorter, update distance
                 if (dist[i][k] != INF && dist[k][j] != INF) {
                     if (dist[i][k] + dist[k][j] < dist[i][j]) {
                         dist[i][j] = dist[i][k] + dist[k][j];
@@ -452,11 +493,12 @@ bool FLOYD(Graph* graph, char option)
         }
     }
 
-    // Check for negative cycle (diagonal should be 0)
+    // Check for negative cycle (diagonal should remain 0)
     for (int i = 0; i < size; i++) {
         if (dist[i][i] < 0) return false;
     }
 
+    // Output results
     ofstream fout;
     fout.open("log.txt", ios::app);
     if (!fout.is_open()) return false;
@@ -486,6 +528,7 @@ bool FLOYD(Graph* graph, char option)
 }
 
 // Closeness Centrality - Graph centrality measure (undirected, weighted)
+// Measures how central each vertex is based on its distance to all other vertices
 bool Centrality(Graph* graph) {
     if (graph == nullptr) return false;
 
@@ -532,6 +575,7 @@ bool Centrality(Graph* graph) {
     fout << "========CENTRALITY========" << endl;
 
     // Calculate centrality for each vertex
+    // Centrality(v) = (n-1) / sum of distances from v to all other vertices
     vector<double> centrality(size);
     vector<long long> sum_dist(size);
     vector<bool> disconnected(size, false);
@@ -554,6 +598,7 @@ bool Centrality(Graph* graph) {
             centrality[i] = (double)(size - 1) / sum_dist[i];
         }
         
+        // Track maximum centrality
         if (!disconnected[i] && centrality[i] > max_centrality) {
             max_centrality = centrality[i];
         }
@@ -565,7 +610,9 @@ bool Centrality(Graph* graph) {
         if (disconnected[i]) {
             fout << "x" << endl;
         } else {
+            // Output as fraction (n-1)/sum
             fout << (size - 1) << "/" << sum_dist[i];
+            // Mark vertex with highest centrality
             if (abs(centrality[i] - max_centrality) < 1e-9 && max_centrality > 0) {
                 fout << " <- Most Central";
             }
